@@ -35,5 +35,10 @@ function adminLogin(req, res) {
     }
 }
 
+function adminIndex(req,res){
+    res.render("admin/index");
+}
+
 exports.admin = admin;
 exports.adminLogin = adminLogin;
+exports.adminIndex = adminIndex;
