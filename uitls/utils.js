@@ -7,10 +7,11 @@ function md5Crypto(plaintext) {
     return ciphertext.toLowerCase();
 }
 
-function returnErrorRes(msg) {
+function returnErrorRes(msg,data = {}) {
     return {
         "code": -1,
-        "msg": msg
+        "msg": msg,
+        "data" : data
     }
 }
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>管理后台</title>
+    <title>管理后台 - 登录界面</title>
 
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/toastr.min.css">
@@ -34,6 +34,13 @@
 <script src="/js/axios.min.js"></script>
 <script>
     let loginBtn = $("#loginBtn");
+
+    $('#pwd').on("keyup",function (e) {
+        if(e.keyCode === 13){
+            loginBtn.click();
+        }
+
+    });
     loginBtn.on("click",function () {
         let userName = $("#userName").val();
         let pwd = $("#pwd").val();
@@ -41,6 +48,7 @@
             toastr.warning("数据错误！！");
             return;
         }
+
         axios.post("/admin/login",{
             "userName" : userName,
             "pwd" : pwd
@@ -48,7 +56,10 @@
            if(data.status === 200 && data.data.code > 0){
                const res = data.data;
                toastr.success("登录成功");
-               //接着跳转页面
+               sessionStorage.setItem("userName",res.data.userName);
+               setTimeout(function () {
+                   location.href = res.data.url;
+               },1000);
            }else{
                toastr.warning(data.data.msg);
            }

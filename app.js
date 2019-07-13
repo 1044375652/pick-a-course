@@ -29,7 +29,8 @@ app.get("/", function (req, res) {
 
 app.get("/admin", adminController.admin);
 app.post("/admin/login", adminController.adminLogin);
-app.get("/admin/index", adminController.adminIndex);
+app.get("/admin/condition", adminController.adminCondition);
+app.get("/admin/student",adminController.getAdminStudentPage);
 
 
 app.get("/student", function (req, res) {

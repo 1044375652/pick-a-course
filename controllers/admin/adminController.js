@@ -23,7 +23,8 @@ function adminLogin(req, res) {
             }else{
                 req.session.userName = obj.userName;
                 res.json(returnSuccessRes("登录成功",{
-                    "url" : ""//成功的页面
+                    "url" : "/admin/condition",//成功的页面
+                    "userName" : obj.userName
                 }));
             }
         }).catch(function (err) {
@@ -35,10 +36,29 @@ function adminLogin(req, res) {
     }
 }
 
-function adminIndex(req,res){
-    res.render("admin/index");
+function adminCondition(req,res){
+    if(!req.session.userName){
+        res.json(returnErrorRes("您还未登录，请登录",{
+            "url" : "/admin/login"
+        }));
+    }else{
+        res.render("admin/condition");
+    }
+
+}
+
+function getAdminStudentPage(req,res){
+    if(!req.session.userName){
+        res.json(returnErrorRes("您还未登录，请登录",{
+            "url" : "/admin/login"
+        }));
+    }else{
+        res.render("admin/student");
+    }
+
 }
 
 exports.admin = admin;
 exports.adminLogin = adminLogin;
-exports.adminIndex = adminIndex;
+exports.adminCondition = adminCondition;
+exports.getAdminStudentPage = getAdminStudentPage;

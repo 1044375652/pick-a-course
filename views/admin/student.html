@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html class='no-js' lang='en'>
+<head>
+    <meta charset='utf-8'>
+    <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'>
+    <title>管理员面板 - 北航附中选修课报名系统</title>
+    <link href="/css/application-a07755f5.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/iconfont.css" rel="stylesheet" type="text/css">
+</head>
+<link href="/css/tip-yellowsimple.css" rel="stylesheet" type="text/css">
+</head>
+<link rel="stylesheet" href="/css/ui.jqgrid.css">
+<link rel="stylesheet" href="/css/jquery-ui-1.8.16.custom.css">
+<body class='main page'>
+
+<!-- Navbar -->
+<div class='navbar navbar-default' id='navbar'>
+    <a class='navbar-brand' href='#'>
+        <img src="/img/logo.jpeg" class="logo">北京理工大学珠海学院选课系统 - 管理员面板</a>
+    <ul class='nav navbar-nav pull-right'>
+        <li>
+            <a href='#'> <i class='icon-cog'></i>
+                账户设置
+            </a>
+        </li>
+        <li class='dropdown user'>
+            <a class='dropdown-toggle' data-toggle='dropdown' href='#'>
+                <i class='icon-user'></i>
+                <strong></strong>
+                <b class='caret'></b>
+            </a>
+            <ul class='dropdown-menu'>
+                <li>
+                    <a href="/">退出登录</a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<div id='wrapper'>
+    <section id='sidebar'>
+        <ul id='dock'>
+            <li class='launcher'>
+                <i class='iconfont'>&#xe61e;</i>
+                <a href="/admin/condition">选课状态</a>
+            </li>
+            <li class='active launcher'>
+                <i class='iconfont'>&#xe7b2;</i>
+                <a href="/admin/student">学生管理</a>
+            </li>
+            <li class='launcher'>
+                <i class='iconfont'>&#xe7b4;</i>
+                <a href="/admin/course">课程管理</a>
+            </li>
+            <li class='launcher'>
+                <i class='iconfont'>&#xe6f7;</i>
+                <a href="/admin/report">报表</a>
+            </li>
+        </ul>
+        <div data-toggle='tooltip' id='beaker' title='Made by lab2023'></div>
+    </section>
+
+    <!-- Tools -->
+    <section id='tools'>
+        <ul class='breadcrumb' id='breadcrumb'>
+            <li class='active'>
+                学生清单
+            </li>
+            <li>
+                <button id="importStudentExcel">导入学生Excel表格</button>
+            </li>
+            <li>
+                <button id="addOneStudent">增加单个学生</button>
+            </li>
+        </ul>
+    </section>
+    <!-- Content -->
+    <div id='content'>
+        <div class='panel panel-default'>
+            <div class='panel-heading'>
+                全部学生清单
+            </div>
+            <div class='panel-body'>
+                <div class="row searchbox">
+                    <div class="col-lg-5"><input type="text" class="form-control" placeholder="快捷查询" autofocus
+                                                 id="keywordtxt"></div>
+                </div>
+
+
+                <!-- 空表格，由jqGrid来填充表格的行、列 -->
+                <table id="list"></table>
+                <!-- 分页条 -->
+                <div id="listnav"></div>
+
+                <input type="button" class="btn btn-danger" value="删除" id="delBtn">
+            </div>
+        </div>
+        <a id="info_tip" class="info_tip" href="#"></a>
+    </div>
+</div>
+
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap.js"></script>
+<script>
+    $("#navbar > ul > li.dropdown.user > a > strong").text(sessionStorage.getItem("userName"));
+</script>
+</body>
+</html>
