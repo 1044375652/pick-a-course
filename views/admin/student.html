@@ -69,13 +69,18 @@
                 学生清单
             </li>
             <li>
-                <button id="importStudentExcel">导入学生Excel表格</button>
+                <button id="importStudentExcel"
+                        data-toggle="modal"
+                        data-target="#importStudentExcelModal">导入学生Excel表格
+                </button>
             </li>
             <li>
                 <button id="addOneStudent">增加单个学生</button>
             </li>
         </ul>
     </section>
+
+
     <!-- Content -->
     <div id='content'>
         <div class='panel panel-default'>
@@ -101,10 +106,59 @@
     </div>
 </div>
 
+
+<!--导入学生Excel Modal-->
+<div class="modal fade" id="importStudentExcelModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">导入学生Excel</h4>
+            </div>
+            <div class="modal-body">
+                <form enctype="multipart/form-data" method="post">
+                    <div class="form-group">
+                        <input type="file" id="studentExcel">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="submitStudentExcel">Save changes</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <script type="text/javascript" src="/js/jquery.min.js"></script>
 <script type="text/javascript" src="/js/bootstrap.js"></script>
+<script src="/js/toastr.min.js"></script>
+<script src="/js/axios.min.js"></script>
 <script>
     $("#navbar > ul > li.dropdown.user > a > strong").text(sessionStorage.getItem("userName"));
+</script>
+<script>
+    $("#submitStudentExcel").on("click", function () {
+        const config = {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
+        };
+        let formData = new FormData();
+        formData.append("studentExcel", $("#studentExcel")[0].files[0]);
+        axios.post("/admin/student/excel", formData, config).then(function (data) {
+            if(data.status === 200 && data.data.code > 0){
+                const res = data.data;
+                toastr.success(res.msg);
+            }else{
+                toastr.warning(data.data.msg);
+            }
+            setTimeout(function () {
+                $("#importStudentExcelModal").modal("hide");
+            },500);
+        });
+    });
 </script>
 </body>
 </html>

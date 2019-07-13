@@ -31,7 +31,7 @@ app.get("/admin", adminController.admin);
 app.post("/admin/login", adminController.adminLogin);
 app.get("/admin/condition", adminController.adminCondition);
 app.get("/admin/student",adminController.getAdminStudentPage);
-
+app.post("/admin/student/excel",adminController.getAdminStudentExcel);
 
 app.get("/student", function (req, res) {
     res.send("学生登录");
