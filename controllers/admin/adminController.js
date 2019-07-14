@@ -67,7 +67,6 @@ function getAdminStudentPage(req, res) {
 }
 
 function getAdminStudentExcel(req, res) {
-    console.log(createInitPwd());
     let form = new formidable.IncomingForm();
     form.keepExtensions = true;
     form.uploadDir = './upload';
@@ -76,8 +75,13 @@ function getAdminStudentExcel(req, res) {
             res.json(returnErrorRes("上传失败"));
             return;
         }
-        if (!files.hasOwnProperty("studentExcel")) {
+        if (JSON.stringify(files) === "{}") {
+            res.json(returnErrorRes("请选择文件"));
+            return;
+        }
+        if (files.hasOwnProperty("studentExcel")) {
             res.json(returnErrorRes("上传失败"));
+            return;
         }
         const reg = RegExp(/.xlsx/);
         if (!reg.test(files.studentExcel.name)) {
