@@ -5,14 +5,10 @@
     <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'>
     <title>管理员面板 - 北航附中选修课报名系统</title>
     <link href="/css/application-a07755f5.css" rel="stylesheet" type="text/css"/>
-    <link href="/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
     <link href="/css/iconfont.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="/css/toastr.min.css">
+
 </head>
-<link href="/css/tip-yellowsimple.css" rel="stylesheet" type="text/css">
-</head>
-<link rel="stylesheet" href="/css/ui.jqgrid.css">
-<link rel="stylesheet" href="/css/jquery-ui-1.8.16.custom.css">
 <body class='main page'>
 
 <!-- Navbar -->
@@ -20,11 +16,6 @@
     <a class='navbar-brand' href='#'>
         <img src="/img/logo.jpeg" class="logo">北京理工大学珠海学院选课系统 - 管理员面板</a>
     <ul class='nav navbar-nav pull-right'>
-        <li>
-            <a href='#'> <i class='icon-cog'></i>
-                账户设置
-            </a>
-        </li>
         <li class='dropdown user'>
             <a class='dropdown-toggle' data-toggle='dropdown' href='#'>
                 <i class='icon-user'></i>
@@ -33,7 +24,7 @@
             </a>
             <ul class='dropdown-menu'>
                 <li>
-                    <a href="/">退出登录</a>
+                    <a href="#">退出登录</a>
                 </li>
             </ul>
         </li>
@@ -72,39 +63,39 @@
             <li>
                 <button id="importStudentExcel"
                         data-toggle="modal"
-                        data-target="#importStudentExcelModal">导入学生Excel表格
+                        data-target="#importStudentExcelModal"
+                        class="btn btn-info"
+                >导入学生Excel表格
                 </button>
             </li>
             <li>
-                <button id="addOneStudent">增加单个学生</button>
+                <button id="addOneStudent"
+                        class="btn btn-success"
+                >增加单个学生
+                </button>
             </li>
         </ul>
     </section>
 
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+            <th>学号</th>
+            <th>姓名</th>
+            <th>年级</th>
+            <th>性别</th>
+            <th>初始密码</th>
+            <th>加密后的密码</th>
+            <th>是否已修改初始密码</th>
+            <th>操作</th>
+            </thead>
+            <tbody id="studentTmplTbody">
 
-    <!-- Content -->
-    <div id='content'>
-        <div class='panel panel-default'>
-            <div class='panel-heading'>
-                全部学生清单
-            </div>
-            <div class='panel-body'>
-                <div class="row searchbox">
-                    <div class="col-lg-5"><input type="text" class="form-control" placeholder="快捷查询" autofocus
-                                                 id="keywordtxt"></div>
-                </div>
-
-
-                <!-- 空表格，由jqGrid来填充表格的行、列 -->
-                <table id="list"></table>
-                <!-- 分页条 -->
-                <div id="listnav"></div>
-
-                <input type="button" class="btn btn-danger" value="删除" id="delBtn">
-            </div>
-        </div>
-        <a id="info_tip" class="info_tip" href="#"></a>
+            </tbody>
+        </table>
     </div>
+
+
 </div>
 
 
@@ -132,14 +123,44 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+
+<script id="studentTmpl" type="text/x-jquery-tmpl">
+    <tr>
+        <td>${school_no}</td>
+        <td>${name}</td>
+        <td>${grade}</td>
+        <td>${sex}</td>
+        <td>${init_pwd}</td>
+        <td>${pwd}</td>
+        <td>${is_modify}</td>
+        <td>
+            <button class="btn btn-warning">删除</button>
+            <button class="btn btn-info">修改</button>
+        </td>
+    </tr>
+
+
+</script>
 <script type="text/javascript" src="/js/jquery.min.js"></script>
 <script type="text/javascript" src="/js/bootstrap.js"></script>
 <script src="/js/toastr.min.js"></script>
 <script src="/js/axios.min.js"></script>
+<script src="/js/jquery.tmpl.js"></script>
 <script>
     $("#navbar > ul > li.dropdown.user > a > strong").text(sessionStorage.getItem("userName"));
 </script>
 <script>
+
+    function Vue() {
+        this.data = {
+            page: 1,
+            keyword: "",
+            count: 1
+        }
+    }
+
+    let vue = new Vue();
+
     $("#submitStudentExcel").on("click", function () {
         if (confirm("提交后，之前所有的数据都会被清空，确定提交？")) {
             const config = {
@@ -155,17 +176,108 @@
                         $("#importStudentExcelModal").modal("hide");
                         if (data.status === 200 && data.data.code > 0) {
                             const res = data.data;
-                            console.log(res.msg);
                             toastr.success(res.msg);
                         } else {
                             toastr.warning(data.data.msg);
-                            console.log(data.data.msg);
                         }
+                        location.hre = "/admin/student";
                     }, 500);
                 });
         }
+    });
+
+    axios.get("/admin/student/detail", {
+        params: vue.data
+    }).then(function (data) {
+        if (data.status === 200 && data.data.code > 0) {
+            const res = data.data.data;
+            vue.data.page = parseInt(res.page);
+            vue.data.count = res.count;
+            vue.data.keyword = "";
+            vue.data.data = res.data;
+            showData(vue.data.data);
+        } else {
+            toastr.warning(data.data.msg);
+        }
+    });
+
+    function showData(items) {
+        for (let item of items) {
+            const data = {
+                "school_no": item.school_no,
+                "name": item.name,
+                "grade": studentGradeCodeToMsg(item.grade),
+                "sex": studentSexCodeToMsg(item.sex),
+                "init_pwd": item.init_pwd,
+                "pwd": item.pwd,
+                "is_modify": studentIsModifyCodeToMsg(item.is_modify),
+            };
+            $.tmpl($("#studentTmpl"), data).appendTo("#studentTmplTbody");
+        }
+    }
 
 
+    function studentGradeCodeToMsg(code) {
+        let msg = "";
+        switch (code) {
+            case 0 :
+                msg = "初一";
+                break;
+            case 1 :
+                msg = "初二";
+                break;
+            case 2 :
+                msg = "初三";
+                break;
+            case 3 :
+                msg = "高一";
+                break;
+            case 4 :
+                msg = "高二";
+                break;
+            case 5 :
+                msg = "高三";
+                break;
+        }
+        return msg;
+    }
+
+
+    function studentSexCodeToMsg(code) {
+        let msg = "";
+        switch (code) {
+            case 0 :
+                msg = "男";
+                break;
+            case 1 :
+                msg = "女";
+                break;
+        }
+        return msg;
+    }
+
+
+    function studentIsModifyCodeToMsg(code) {
+        let msg = "";
+        switch (code) {
+            case 0 :
+                msg = "否";
+                break;
+            case 1 :
+                msg = "是";
+                break;
+        }
+        return msg;
+    }
+
+    $("#navbar > ul > li > ul > li > a").on("click", function () {
+        axios.put("/admin/exit").then(function (data) {
+            sessionStorage.clear();
+            toastr.success(data.data.msg);
+            setTimeout(function () {
+                location.href = data.data.data.url;
+            }, 500);
+        });
     });
 </script>
 </body>

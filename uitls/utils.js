@@ -128,6 +128,14 @@ function isSimplePwd(pwd) {
     return lv >= 3;
 }
 
+function returnLimitArr(arr, index, size) {
+    let newArr = [];
+    for (let i = index; i < size; i++) {
+        newArr.push(arr[i]);
+    }
+    return newArr;
+}
+
 exports.md5Crypto = md5Crypto;
 exports.returnErrorRes = returnErrorRes;
 exports.returnSuccessRes = returnSuccessRes;
@@ -136,3 +144,4 @@ exports.studentGradeMsgToCode = studentGradeMsgToCode;
 exports.studentSexCodeToMsg = studentSexCodeToMsg;
 exports.studentSexMsgToCode = studentSexMsgToCode;
 exports.createInitPwd = createInitPwd;
+exports.returnLimitArr = returnLimitArr;

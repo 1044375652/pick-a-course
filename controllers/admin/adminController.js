@@ -5,6 +5,7 @@ const {studentSexMsgToCode} = require("../../uitls/utils");
 const {createInitPwd} = require("../../uitls/utils");
 const {md5Crypto} = require("../../uitls/utils");
 const {studentGradeMsgToCode} = require("../../uitls/utils");
+const {returnLimitArr} = require("../../uitls/utils");
 const formidable = require("formidable");
 const xlsx = require("node-xlsx");
 const fs = require('fs');
@@ -79,7 +80,7 @@ function getAdminStudentExcel(req, res) {
             res.json(returnErrorRes("请选择文件"));
             return;
         }
-        if (files.hasOwnProperty("studentExcel")) {
+        if (!files.hasOwnProperty("studentExcel")) {
             res.json(returnErrorRes("上传失败"));
             return;
         }
@@ -92,12 +93,12 @@ function getAdminStudentExcel(req, res) {
         const studentExcelArr = xlsx.parse(files.studentExcel.path);
         Student.deleteData();
         for (let items of studentExcelArr) {
-            for (let item of items.data) {
+            for (let i = 1; i < items.data.length; i++) {
                 const initPwd = createInitPwd();
-                let student = {
-                    "school_no": item[0],
-                    "name": item[1],
-                    "sex": studentSexMsgToCode(item[2]),
+                const student = {
+                    "school_no": items.data[i][0],
+                    "name": items.data[i][1],
+                    "sex": studentSexMsgToCode(items.data[i][2]),
                     "pwd": md5Crypto(initPwd),
                     "init_pwd": initPwd,
                     "is_modify": 0,
@@ -111,8 +112,53 @@ function getAdminStudentExcel(req, res) {
     });
 }
 
+function getAdminStudent(req, res) {
+    const page = req.query.page;
+    const count = req.query.count;
+    if (page < 1) {
+        res.json(returnErrorRes("page不能小于1"));
+        return;
+    }
+    if (count > 1 && page > count) {
+        res.json(returnErrorRes("page太大了"));
+        return;
+    }
+    const index = page - 1;
+    const size = 10;
+    const keyword = req.query.keyword;
+    const limit = (keyword.length < 1) ? {} : {
+        $or: [
+            {"school_no": keyword},
+            {"name": keyword},
+            {"sex": keyword},
+            {"grade": keyword},
+        ]
+    };
+
+    Student.selectData(limit).then(function (docs) {
+        const count = docs.length;
+        const studentArr = returnLimitArr(docs, index, (index * 10 + size));
+        const newPage = page;
+        return res.json(returnSuccessRes("请求数据成功", {
+            "count": count,
+            "page": newPage,
+            "data": studentArr
+        }));
+    });
+
+}
+
+function exit(req, res) {
+    req.session.destroy();
+    res.json(returnSuccessRes("退出成功", {
+        "url": "/admin"
+    }));
+}
+
 exports.admin = admin;
 exports.adminLogin = adminLogin;
 exports.adminCondition = adminCondition;
 exports.getAdminStudentPage = getAdminStudentPage;
 exports.getAdminStudentExcel = getAdminStudentExcel;
+exports.getAdminStudent = getAdminStudent;
+exports.exit = exit;

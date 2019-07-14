@@ -32,6 +32,9 @@ app.post("/admin/login", adminController.adminLogin);
 app.get("/admin/condition", adminController.adminCondition);
 app.get("/admin/student",adminController.getAdminStudentPage);
 app.post("/admin/student/excel",adminController.getAdminStudentExcel);
+app.get("/admin/student/detail",adminController.getAdminStudent);
+app.put("/admin/exit",adminController.exit);
+
 
 app.get("/student", function (req, res) {
     res.send("学生登录");
@@ -40,6 +43,7 @@ app.get("/student", function (req, res) {
 app.get("/test",function (req,res) {
    console.log(req.session);
 });
+
 
 
 app.use(express.static("public"));
