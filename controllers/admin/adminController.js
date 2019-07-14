@@ -155,6 +155,36 @@ function exit(req, res) {
     }));
 }
 
+function adminAddOneStudent(req, res) {
+    if (req.body.hasOwnProperty("userName") &&
+        req.body.hasOwnProperty("schoolNo") &&
+        req.body.hasOwnProperty("grade") &&
+        req.body.hasOwnProperty("sex") &&
+        req.body.hasOwnProperty("initPwd")) {
+        const userName = req.body.userName;
+        const schoolNo = req.body.schoolNo;
+        const grade = req.body.grade;
+        const sex = req.body.sex;
+        const initPwd = req.body.initPwd;
+        const student = {
+            "school_no": schoolNo,
+            "userName": userName,
+            "grade": grade,
+            "sex": sex,
+            "init_pwd": initPwd,
+            "pwd": md5Crypto(initPwd),
+            "is_modify": 0
+        };
+        Student.addData(student).then(function () {
+            res.json(returnSuccessRes("添加学生成功"));
+            return;
+        });
+    } else {
+        res.json(returnErrorRes("数据不全"));
+        return;
+    }
+}
+
 exports.admin = admin;
 exports.adminLogin = adminLogin;
 exports.adminCondition = adminCondition;
@@ -162,3 +192,4 @@ exports.getAdminStudentPage = getAdminStudentPage;
 exports.getAdminStudentExcel = getAdminStudentExcel;
 exports.getAdminStudent = getAdminStudent;
 exports.exit = exit;
+exports.adminAddOneStudent = adminAddOneStudent;

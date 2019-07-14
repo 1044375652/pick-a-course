@@ -13,7 +13,7 @@ const studentSchema = new Schema({
 
 studentSchema.statics.addData = function (data) {
     const student = new Student(data);
-    student.save();
+    return student.save();
 };
 
 studentSchema.statics.deleteData = function () {
@@ -23,7 +23,7 @@ studentSchema.statics.deleteData = function () {
 };
 
 studentSchema.statics.selectData = function (limit = {}) {
-    return this.find(limit, {"_id": 0, "_v": 0});
+    return this.find(limit, {"_v": 0});
 };
 
 const Student = mongoose.model("Student", studentSchema, "student");

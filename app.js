@@ -34,6 +34,7 @@ app.get("/admin/student",adminController.getAdminStudentPage);
 app.post("/admin/student/excel",adminController.getAdminStudentExcel);
 app.get("/admin/student/detail",adminController.getAdminStudent);
 app.put("/admin/exit",adminController.exit);
+app.post("/admin/student/addition",adminController.adminAddOneStudent);
 
 
 app.get("/student", function (req, res) {

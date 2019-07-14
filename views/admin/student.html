@@ -12,23 +12,25 @@
 <body class='main page'>
 
 <!-- Navbar -->
-<div class='navbar navbar-default' id='navbar'>
-    <a class='navbar-brand' href='#'>
-        <img src="/img/logo.jpeg" class="logo">北京理工大学珠海学院选课系统 - 管理员面板</a>
-    <ul class='nav navbar-nav pull-right'>
-        <li class='dropdown user'>
-            <a class='dropdown-toggle' data-toggle='dropdown' href='#'>
-                <i class='icon-user'></i>
-                <strong></strong>
-                <b class='caret'></b>
-            </a>
-            <ul class='dropdown-menu'>
-                <li>
-                    <a href="#">退出登录</a>
-                </li>
-            </ul>
-        </li>
-    </ul>
+<div class="container">
+    <div class='navbar navbar-default' id='navbar'>
+        <a class='navbar-brand' href='#'>
+            <img src="/img/logo.jpeg" class="logo">北京理工大学珠海学院选课系统 - 管理员面板</a>
+        <ul class='nav navbar-nav pull-right'>
+            <li class='dropdown user'>
+                <a class='dropdown-toggle' data-toggle='dropdown' href='#'>
+                    <i class='icon-user'></i>
+                    <strong></strong>
+                    <b class='caret'></b>
+                </a>
+                <ul class='dropdown-menu'>
+                    <li>
+                        <a href="#">退出登录</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
 </div>
 
 <div id='wrapper'>
@@ -71,6 +73,8 @@
             <li>
                 <button id="addOneStudent"
                         class="btn btn-success"
+                        data-toggle="modal"
+                        data-target="#addOneStudentModal"
                 >增加单个学生
                 </button>
             </li>
@@ -119,9 +123,68 @@
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" id="submitStudentExcel">Save changes</button>
             </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+        </div>
+    </div>
+</div>
+
+<!--增加单个学生 Modal-->
+<div class="modal fade" id="addOneStudentModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">增加单个学生</h4>
+            </div>
+            <div class="modal-body">
+                <form enctype="multipart/form-data" method="post">
+                    <div class="form-group">
+                        <label for="addStudentSchoolNo">学号</label>
+                        <input data-check class="form-control" type="text" id="addStudentSchoolNo">
+                        <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
+                        <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="addStudentName">姓名</label>
+                        <input data-check class="form-control" type="text" id="addStudentName">
+                        <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
+                        <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="addStudentGrade">年级</label>
+                        <select id="addStudentGrade" class="form-control">
+                            <option value="0">初一</option>
+                            <option value="1">初二</option>
+                            <option value="2">初三</option>
+                            <option value="3">高一</option>
+                            <option value="4">高二</option>
+                            <option value="5">高三</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <p><strong>性别</strong></p>
+                        <label class="radio-inline">
+                            <input type="radio" checked name="addStudentSex" id="inlineRadio1" value="0">男
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="addStudentSex" id="inlineRadio2" value="1">女
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="addStudentPwd">密码</label>
+                        <input data-check class="form-control" type="text" id="addStudentPwd">
+                        <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
+                        <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="submitStudentAddBtn" disabled>Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <script id="studentTmpl" type="text/x-jquery-tmpl">
@@ -138,6 +201,7 @@
             <button class="btn btn-info">修改</button>
         </td>
     </tr>
+
 
 
 </script>
@@ -277,6 +341,63 @@
             setTimeout(function () {
                 location.href = data.data.data.url;
             }, 500);
+        });
+    });
+
+    let illegal = {
+        "addStudentName": true,
+        "addStudentPwd": true,
+        "addStudentSchoolNo": true
+    };
+
+    const submitStudentAddBtn = $('#submitStudentAddBtn');
+
+    $.fn.extend({
+        toggleMsg: function (className, display) {
+            this.siblings(className).css("display", display);
+        }
+    });
+
+    $("[data-check]").on("blur", function () {
+        if ($(this).val().length > 0) {
+            let index = $(this).attr("id");
+            illegal[index] = false;
+            submitStudentAddBtn.attr("disabled", false);
+            $(this).toggleMsg(".alert-success", "block");
+            for (let key in illegal) {
+                if (illegal[key]) {
+                    submitStudentAddBtn.attr("disabled", true);
+                }
+            }
+        } else {
+            $(this).toggleMsg(".alert-danger", "block");
+        }
+    });
+
+    $("[data-check]").on("focus", function () {
+        $(this).toggleMsg(".alert", "none");
+    });
+
+
+    submitStudentAddBtn.on("click", function () {
+        const data = {
+            "userName": $("#addStudentName").val(),
+            "schoolNo": $("#addStudentSchoolNo").val(),
+            "grade": $("#addStudentGrade").val(),
+            "sex": $("[name=addStudentSex]:checked").val(),
+            "initPwd": $("#addStudentPwd").val(),
+        };
+        axios.post("/admin/student/addition", data).then(function (data) {
+            $("#addOneStudentModal").modal("hide");
+            if (data.status === 200 && data.data.code > 0) {
+                const res = data.data;
+                toastr.success(res.msg);
+                setTimeout(function () {
+                    location.reload();
+                }, 500);
+            } else {
+                toastr.success(data.data.msg);
+            }
         });
     });
 </script>

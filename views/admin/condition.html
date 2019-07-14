@@ -20,7 +20,7 @@
             </a>
             <ul class='dropdown-menu'>
                 <li>
-                    <a href="/">退出登录</a>
+                    <a href="#">退出登录</a>
                 </li>
             </ul>
         </li>
@@ -74,10 +74,22 @@
 </div>
 <script type="text/javascript" src="/js/jquery.min.js"></script>
 <script type="text/javascript" src="/js/bootstrap.js"></script>
+<script src="/js/toastr.min.js"></script>
+<script src="/js/axios.min.js"></script>
+<script src="/js/jquery.tmpl.js"></script>
 <script>
     $("#navbar > ul > li.dropdown.user > a > strong").text(sessionStorage.getItem("userName"));
 </script>
 <script>
+    $("#navbar > ul > li > ul > li > a").on("click", function () {
+        axios.put("/admin/exit").then(function (data) {
+            sessionStorage.clear();
+            toastr.success(data.data.msg);
+            setTimeout(function () {
+                location.href = data.data.data.url;
+            }, 500);
+        });
+    });
 </script>
 </body>
 </html>
