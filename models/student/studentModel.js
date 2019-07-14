@@ -18,12 +18,23 @@ studentSchema.statics.addData = function (data) {
 
 studentSchema.statics.deleteData = function () {
     this.deleteMany({}, function () {
+    });
+};
+
+studentSchema.statics.deleteDataBySchoolNo = function (deletePeople) {
+    this.deleteOne(deletePeople, function () {
 
     });
 };
 
 studentSchema.statics.selectData = function (limit = {}) {
     return this.find(limit, {"_v": 0});
+};
+
+studentSchema.statics.updateStudentMsg = function (schoolNo, obj) {
+    this.updateOne({school_no: schoolNo}, obj, function () {
+
+    });
 };
 
 const Student = mongoose.model("Student", studentSchema, "student");

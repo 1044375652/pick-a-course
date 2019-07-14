@@ -185,6 +185,40 @@ function adminAddOneStudent(req, res) {
     }
 }
 
+function addminDeleteStudentBySchoolNo(req, res) {
+    if (req.params.hasOwnProperty("school_no")) {
+        const deletePeople = {
+            "school_no": req.params.school_no
+        };
+        Student.deleteDataBySchoolNo(deletePeople);
+        res.json(returnSuccessRes("删除成功"));
+        return;
+    }
+    res.json(returnErrorRes("数据不全"));
+    return;
+}
+
+function addminUpdateStudent(req, res) {
+    if (req.params.hasOwnProperty("school_no") &&
+        req.body.hasOwnProperty("userName") &&
+        req.body.hasOwnProperty("grade") &&
+        req.body.hasOwnProperty("sex") &&
+        req.body.hasOwnProperty("initPwd")) {
+        const schoolNo = req.params.school_no;
+        const obj = {
+            "name": req.body.userName,
+            "grade": req.body.grade,
+            "sex": req.body.sex,
+            "init_pwd": req.body.initPwd,
+        };
+        Student.updateStudentMsg(schoolNo, obj);
+        res.json(returnSuccessRes("更新成功"));
+        return;
+    }
+    res.json(returnErrorRes("数据不合法"));
+    return;
+}
+
 exports.admin = admin;
 exports.adminLogin = adminLogin;
 exports.adminCondition = adminCondition;
@@ -193,3 +227,5 @@ exports.getAdminStudentExcel = getAdminStudentExcel;
 exports.getAdminStudent = getAdminStudent;
 exports.exit = exit;
 exports.adminAddOneStudent = adminAddOneStudent;
+exports.addminDeleteStudentBySchoolNo = addminDeleteStudentBySchoolNo;
+exports.addminUpdateStudent = addminUpdateStudent;

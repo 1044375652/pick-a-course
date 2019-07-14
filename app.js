@@ -30,21 +30,25 @@ app.get("/", function (req, res) {
 app.get("/admin", adminController.admin);
 app.post("/admin/login", adminController.adminLogin);
 app.get("/admin/condition", adminController.adminCondition);
-app.get("/admin/student",adminController.getAdminStudentPage);
-app.post("/admin/student/excel",adminController.getAdminStudentExcel);
-app.get("/admin/student/detail",adminController.getAdminStudent);
-app.put("/admin/exit",adminController.exit);
-app.post("/admin/student/addition",adminController.adminAddOneStudent);
+app.get("/admin/student", adminController.getAdminStudentPage);
+app.post("/admin/student/excel", adminController.getAdminStudentExcel);
+app.get("/admin/student/detail", adminController.getAdminStudent);
+app.put("/admin/exit", adminController.exit);
+app.post("/admin/student/addition", adminController.adminAddOneStudent);
+app.delete("/admin/student/deletion/:school_no", adminController.addminDeleteStudentBySchoolNo);
+app.put("/admin/student/renewal/:school_no", adminController.addminUpdateStudent);
+// app.put("/admin/student/renewal/:school_no", function (req,res) {
+//     res.send("123");
+// });
 
 
 app.get("/student", function (req, res) {
     res.send("学生登录");
 });
 
-app.get("/test",function (req,res) {
-   console.log(req.session);
+app.get("/test", function (req, res) {
+    console.log(req.session);
 });
-
 
 
 app.use(express.static("public"));

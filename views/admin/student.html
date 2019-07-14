@@ -81,22 +81,24 @@
         </ul>
     </section>
 
-    <div class="table-responsive">
-        <table class="table table-hover">
-            <thead>
-            <th>学号</th>
-            <th>姓名</th>
-            <th>年级</th>
-            <th>性别</th>
-            <th>初始密码</th>
-            <th>加密后的密码</th>
-            <th>是否已修改初始密码</th>
-            <th>操作</th>
-            </thead>
-            <tbody id="studentTmplTbody">
+    <div class="container">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <th>学号</th>
+                <th>姓名</th>
+                <th>年级</th>
+                <th>性别</th>
+                <th>初始密码</th>
+                <th>加密后的密码</th>
+                <th>是否已修改初始密码</th>
+                <th>操作</th>
+                </thead>
+                <tbody id="studentTmplTbody">
 
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 
 
@@ -187,6 +189,66 @@
 </div>
 
 
+<!--修改学生信息 Modal-->
+<div class="modal fade" id="modifyOneStudentModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">修改学生信息</h4>
+            </div>
+            <div class="modal-body">
+                <form enctype="multipart/form-data" method="post">
+                    <div class="form-group">
+                        <label for="modifyStudentSchoolNo">学号</label>
+                        <input data-check class="form-control" type="text" id="modifyStudentSchoolNo">
+                        <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
+                        <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="modifyStudentName">姓名</label>
+                        <input data-check class="form-control" type="text" id="modifyStudentName">
+                        <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
+                        <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="modifyStudentGrade">年级</label>
+                        <select id="modifyStudentGrade" class="form-control">
+                            <option value="0">初一</option>
+                            <option value="1">初二</option>
+                            <option value="2">初三</option>
+                            <option value="3">高一</option>
+                            <option value="4">高二</option>
+                            <option value="5">高三</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <p><strong>性别</strong></p>
+                        <label class="radio-inline">
+                            <input type="radio" checked name="modifyStudentSex" value="0">男
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="modifyStudentSex" value="1">女
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="addStudentPwd">密码</label>
+                        <input data-check class="form-control" type="text" id="modifyStudentPwd">
+                        <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
+                        <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="submitStudentModifyBtn">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script id="studentTmpl" type="text/x-jquery-tmpl">
     <tr>
         <td>${school_no}</td>
@@ -197,10 +259,21 @@
         <td>${pwd}</td>
         <td>${is_modify}</td>
         <td>
-            <button class="btn btn-warning">删除</button>
-            <button class="btn btn-info">修改</button>
+            <button class="btn btn-warning deleteBtn" onClick=deleteEvent(${school_no})>删除</button>
+            <button class="btn btn-info modifyBtn" onClick=modifyEvent(${school_no},"${name}","${grade}","${sex}","${init_pwd}")>修改</button>
         </td>
     </tr>
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -306,6 +379,31 @@
         return msg;
     }
 
+    function studentGradeMsgToCode(msg) {
+        let code = 0;
+        switch (msg) {
+            case "初一" :
+                code = 0;
+                break;
+            case "初二" :
+                code = "1";
+                break;
+            case "初三" :
+                code = 2;
+                break;
+            case "高一" :
+                code = 3;
+                break;
+            case "高二" :
+                code = 4;
+                break;
+            case "高三" :
+                code = 5;
+                break;
+        }
+        return code;
+    }
+
 
     function studentSexCodeToMsg(code) {
         let msg = "";
@@ -318,6 +416,19 @@
                 break;
         }
         return msg;
+    }
+
+    function studentSexMsgToCode(msg) {
+        let code = 0;
+        switch (msg) {
+            case  "男":
+                code = 0;
+                break;
+            case "女" :
+                code = 1;
+                break;
+        }
+        return code;
     }
 
 
@@ -388,7 +499,6 @@
             "initPwd": $("#addStudentPwd").val(),
         };
         axios.post("/admin/student/addition", data).then(function (data) {
-            $("#addOneStudentModal").modal("hide");
             if (data.status === 200 && data.data.code > 0) {
                 const res = data.data;
                 toastr.success(res.msg);
@@ -400,6 +510,56 @@
             }
         });
     });
+
+    function deleteEvent(schoolNo) {
+        if (confirm("你确定删除学号：" + schoolNo + "的学生吗?")) {
+            axios.delete("/admin/student/deletion/" + schoolNo).then(function (data) {
+                if (data.status === 200 && data.data.code > 0) {
+                    const res = data.data;
+                    toastr.success(res.msg);
+                    setTimeout(function () {
+                        location.reload();
+                    }, 500);
+                } else {
+                    toastr.warning(data.data.msg);
+                }
+            });
+        }
+
+    }
+
+    function modifyEvent(schoolNo, name, grade, sex, initPwd) {
+        $("#modifyStudentName").val(name);
+        $("#modifyStudentSchoolNo").val(schoolNo);
+        $("#modifyStudentGrade option[value=" + studentGradeMsgToCode(grade) + "]").attr("selected", true);
+        $("[name=modifyStudentSex][value=" + studentSexMsgToCode(sex) + "]").attr("checked", true);
+        $("#modifyStudentPwd").val(initPwd);
+        $("#modifyOneStudentModal").modal("show");
+    }
+
+    $("#submitStudentModifyBtn").on("click", function () {
+        const schoolNo = $("#modifyStudentSchoolNo").val();
+        const data = {
+            "userName": $("#modifyStudentName").val(),
+            "grade": $("#modifyStudentGrade").val(),
+            "sex": $("[name=modifyStudentSex]:checked").val(),
+            "initPwd": $("#modifyStudentPwd").val(),
+        };
+        axios.put("/admin/student/renewal/" + schoolNo, data).then(function (data) {
+            if (data.status === 200 && data.data.code > 0) {
+                const res = data.data;
+                toastr.success(res.msg);
+                setTimeout(function () {
+                    location.reload();
+                }, 500);
+            } else {
+                toastr.warning(data.data.msg);
+            }
+        });
+
+    });
+
+
 </script>
 </body>
 </html>
