@@ -6,6 +6,7 @@
     <title>管理员面板 - 北航附中选修课报名系统</title>
     <link href="/css/application-a07755f5.css" rel="stylesheet" type="text/css"/>
     <link href="/css/iconfont.css" rel="stylesheet" type="text/css">
+    <link href="/css/animate.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="/css/toastr.min.css">
 
 </head>
@@ -33,7 +34,7 @@
     </div>
 </div>
 
-<div id='wrapper'>
+<div class='container'>
     <section id='sidebar'>
         <ul id='dock'>
             <li class='launcher'>
@@ -99,11 +100,18 @@
                 </tbody>
             </table>
         </div>
+        <div class="row">
+            <nav aria-label="Page navigation" style="position: relative">
+                <div style="position: absolute;display: none" id="pagesDiv">
+                    <ul></ul>
+                </div>
+                <ul class="pagination">
+
+                </ul>
+            </nav>
+        </div>
     </div>
-
-
 </div>
-
 
 <!--导入学生Excel Modal-->
 <div class="modal fade" id="importStudentExcelModal" tabindex="-1" role="dialog">
@@ -267,17 +275,15 @@
 
 
 
+</script>
 
-
-
-
-
-
-
+<script id="pagesDivTmpl" type="text/x-jquery-tmpl">
+    <li>${i}</li>
 
 
 
 </script>
+
 <script type="text/javascript" src="/js/jquery.min.js"></script>
 <script type="text/javascript" src="/js/bootstrap.js"></script>
 <script src="/js/toastr.min.js"></script>
@@ -323,22 +329,34 @@
         }
     });
 
-    axios.get("/admin/student/detail", {
-        params: vue.data
-    }).then(function (data) {
-        if (data.status === 200 && data.data.code > 0) {
-            const res = data.data.data;
-            vue.data.page = parseInt(res.page);
-            vue.data.count = res.count;
-            vue.data.keyword = "";
-            vue.data.data = res.data;
-            showData(vue.data.data);
-        } else {
-            toastr.warning(data.data.msg);
-        }
-    });
+    function getData(size) {
+        vue.data.data = [];
+        axios.get("/admin/student/detail", {
+            params: {
+                page: size,
+                keyword: vue.data.keyword,
+                count: vue.data.count,
+            }
+        }).then(function (data) {
+            if (data.status === 200 && data.data.code > 0) {
+                const res = data.data.data;
+                vue.data.page = parseInt(res.page);
+                vue.data.count = res.count;
+                vue.data.keyword = "";
+                vue.data.data = res.data;
+                showData(vue.data.data);
+            } else {
+                toastr.warning(data.data.msg);
+            }
+        });
+    }
+
+    getData(vue.data.page);
+
 
     function showData(items) {
+        $("#studentTmplTbody").empty();
+        console.log(items.length);
         for (let item of items) {
             const data = {
                 "school_no": item.school_no,
@@ -351,7 +369,28 @@
             };
             $.tmpl($("#studentTmpl"), data).appendTo("#studentTmplTbody");
         }
+        $("nav > .pagination").empty();
+        $("nav > .pagination")
+            .append(`<li class="prePage"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>`)
+            .append(`<li class="nextPage"><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>`);
+
     }
+
+    $("nav > .pagination").delegate(".prePage", "click", function () {
+        if (vue.data.page < 1) {
+            toastr.warning("已经是第一页了");
+            return;
+        }
+        getData(vue.data.page - 1);
+    });
+
+    $("nav > .pagination").delegate(".nextPage", "click", function () {
+        if (vue.data.page > vue.data.count) {
+            toastr.warning("已经是顶页了");
+            return;
+        }
+        getData(vue.data.page + 1);
+    });
 
 
     function studentGradeCodeToMsg(code) {

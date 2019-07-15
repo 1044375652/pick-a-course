@@ -113,8 +113,8 @@ function getAdminStudentExcel(req, res) {
 }
 
 function getAdminStudent(req, res) {
-    const page = req.query.page;
-    const count = req.query.count;
+    const page = parseInt(req.query.page);
+    const count = parseInt(req.query.count);
     if (page < 1) {
         res.json(returnErrorRes("page不能小于1"));
         return;
@@ -136,8 +136,8 @@ function getAdminStudent(req, res) {
     };
 
     Student.selectData(limit).then(function (docs) {
-        const count = docs.length;
-        const studentArr = returnLimitArr(docs, index, (index * 10 + size));
+        const count = Math.ceil(docs.length / size);
+        const studentArr = returnLimitArr(docs, index * 10, (index * 10 + size));
         const newPage = page;
         return res.json(returnSuccessRes("请求数据成功", {
             "count": count,
