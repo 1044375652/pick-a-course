@@ -57,6 +57,11 @@
         <div data-toggle='tooltip' id='beaker' title='Made by lab2023'></div>
     </section>
 
+    <div class="container" style="margin: 10px 0">
+        <div class="col-lg-3 col-lg-offset-9">
+            <input style="float: right;" type="text" class="form-control" placeholder="搜索" id="searchStudent">
+        </div>
+    </div>
     <!-- Tools -->
     <section id='tools'>
         <ul class='breadcrumb' id='breadcrumb'>
@@ -80,37 +85,39 @@
                 </button>
             </li>
         </ul>
+
     </section>
 
     <div class="container">
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                <th>学号</th>
-                <th>姓名</th>
-                <th>年级</th>
-                <th>性别</th>
-                <th>初始密码</th>
-                <th>加密后的密码</th>
-                <th>是否已修改初始密码</th>
-                <th>操作</th>
-                </thead>
-                <tbody id="studentTmplTbody">
 
-                </tbody>
-            </table>
-        </div>
-        <div class="row">
-            <nav aria-label="Page navigation" style="position: relative">
-                <div style="position: absolute;display: none" id="pagesDiv">
-                    <ul></ul>
-                </div>
-                <ul class="pagination">
-
-                </ul>
-            </nav>
-        </div>
     </div>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+            <th>学号</th>
+            <th>姓名</th>
+            <th>年级</th>
+            <th>性别</th>
+            <th>初始密码</th>
+            <th>加密后的密码</th>
+            <th>是否已修改初始密码</th>
+            <th>操作</th>
+            </thead>
+            <tbody id="studentTmplTbody">
+
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <div class="container">
+            <ul id="pagesDiv" style="list-style: none;width: 250px;display: none"></ul>
+        </div>
+        <nav aria-label="Page navigation" style="position: relative">
+            <ul class="pagination">
+            </ul>
+        </nav>
+    </div>
+</div>
 </div>
 
 <!--导入学生Excel Modal-->
@@ -275,15 +282,12 @@
 
 
 
-</script>
 
-<script id="pagesDivTmpl" type="text/x-jquery-tmpl">
-    <li>${i}</li>
+
 
 
 
 </script>
-
 <script type="text/javascript" src="/js/jquery.min.js"></script>
 <script type="text/javascript" src="/js/bootstrap.js"></script>
 <script src="/js/toastr.min.js"></script>
@@ -293,7 +297,6 @@
     $("#navbar > ul > li.dropdown.user > a > strong").text(sessionStorage.getItem("userName"));
 </script>
 <script>
-
     function Vue() {
         this.data = {
             page: 1,
@@ -303,6 +306,7 @@
     }
 
     let vue = new Vue();
+    vue.data.keyword = $("#searchStudent").val();
 
     $("#submitStudentExcel").on("click", function () {
         if (confirm("提交后，之前所有的数据都会被清空，确定提交？")) {
@@ -329,7 +333,7 @@
         }
     });
 
-    function getData(size) {
+    function getData(size = 1) {
         vue.data.data = [];
         axios.get("/admin/student/detail", {
             params: {
@@ -356,7 +360,7 @@
 
     function showData(items) {
         $("#studentTmplTbody").empty();
-        console.log(items.length);
+        console.log(items);
         for (let item of items) {
             const data = {
                 "school_no": item.school_no,
@@ -372,8 +376,11 @@
         $("nav > .pagination").empty();
         $("nav > .pagination")
             .append(`<li class="prePage"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>`)
-            .append(`<li class="nextPage"><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>`);
-
+            .append(`<li class="page"><a href="#"><span>1</span></a></li>`)
+            .append(`<li class="pages"><a href="#"><span>...</span></a></li>`)
+            .append(`<li class="page"><a href="#"><span>${vue.data.count}</span></a></li>`)
+            .append(`<li class="nextPage"><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>`)
+            .append(`<li class="page"><a href="#"><span>${vue.data.page}</span></a></li>`);
     }
 
     $("nav > .pagination").delegate(".prePage", "click", function () {
@@ -391,6 +398,72 @@
         }
         getData(vue.data.page + 1);
     });
+
+    $("nav > .pagination").delegate(".page a", "click", function (e) {
+        e.preventDefault();
+    });
+
+    $("nav > .pagination").delegate(".pages a", "click", function (e) {
+        e.preventDefault();
+    });
+    $("#pagesDiv").delegate(".page a", "click", function (e) {
+        e.preventDefault();
+    });
+
+
+    $("nav > .pagination").delegate(".page a span", "click", function (e) {
+        let page = $(this).text();
+        if (page >= 1 && page <= vue.data.count) {
+            getData(page);
+        }
+    });
+
+    $("#pagesDiv").delegate(".page a span", "click", function (e) {
+        let page = $(this).text();
+        if (page >= 1 && page <= vue.data.count) {
+            getData(page);
+        }
+    });
+
+    $("nav > .pagination").delegate(".pages", "click", function (e) {
+        let pagesDiv = $('#pagesDiv');
+
+        if (pagesDiv.css("display") == "none") {
+            let childrensLength = pagesDiv.children().length;
+            if (childrensLength != (vue.data.count - 2)) {
+                let domStr = "";
+                for (let i = 2; i < vue.data.count - 1; i++) {
+                    domStr += `<li class="page" style="text-align:center;float: left;width: 30px;height: 30px;line-height: 30px;border:1px solid #dddddd;margin: 0 2px;"><a href="#"><span>${i}</span></a></li>`;
+                }
+                pagesDiv.empty();
+                pagesDiv.append(domStr);
+            }
+            pagesDiv.show(500);
+        } else {
+            pagesDiv.hide(500);
+        }
+
+    });
+
+
+    $("#searchStudent").on("input", function () {
+        debounce(debounceGetData, 500)($(this).val());
+    });
+
+    function debounceGetData() {
+        vue.data.keyword = $("#searchStudent").val();
+        getData();
+    }
+
+    function debounce(func, delay) {
+        return function (args) {
+            clearInterval(func.id);
+            func.id = setTimeout(function () {
+                func(args);
+            }, delay);
+        };
+
+    }
 
 
     function studentGradeCodeToMsg(code) {

@@ -126,18 +126,29 @@ function getAdminStudent(req, res) {
     const index = page - 1;
     const size = 10;
     const keyword = req.query.keyword;
-    const limit = (keyword.length < 1) ? {} : {
-        $or: [
-            {"school_no": keyword},
-            {"name": keyword},
-            {"sex": keyword},
-            {"grade": keyword},
-        ]
-    };
+    let limit = {};
+    if (keyword.length > 1) {
+        const reg = new RegExp(keyword, "gi");
+        limit = {
+            $or: [
+                {
+                    "school_no": {
+                        $regex: reg
+                    }
+                },
+                {
+                    "name": {
+                        $regex: reg
+                    }
+                }
+            ]
+        };
+    }
 
     Student.selectData(limit).then(function (docs) {
         const count = Math.ceil(docs.length / size);
-        const studentArr = returnLimitArr(docs, index * 10, (index * 10 + size));
+        const lastIndex = ((index * 10 + size) > docs.length) ? docs.length : (index * 10 + size);
+        const studentArr = returnLimitArr(docs, index * 10, lastIndex);
         const newPage = page;
         return res.json(returnSuccessRes("请求数据成功", {
             "count": count,
