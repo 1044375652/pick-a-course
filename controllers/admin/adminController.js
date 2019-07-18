@@ -2,6 +2,9 @@ const Admin = require("../../models/admin/adminModel");
 const {returnErrorRes} = require("../../uitls/utils");
 const {returnSuccessRes} = require("../../uitls/utils");
 const {studentSexMsgToCode} = require("../../uitls/utils");
+const {studentSexCodeToMsg} = require("../../uitls/utils");
+const {studentIsModifyCodeToMsg} = require("../../uitls/utils");
+const {studentGradeCodeToMsg} = require("../../uitls/utils");
 const {createInitPwd} = require("../../uitls/utils");
 const {md5Crypto} = require("../../uitls/utils");
 const {studentGradeMsgToCode} = require("../../uitls/utils");
@@ -92,9 +95,11 @@ function getAdminStudentExcel(req, res) {
         }
         const studentExcelArr = xlsx.parse(files.studentExcel.path);
         Student.deleteData();
+
         for (let items of studentExcelArr) {
             for (let i = 1; i < items.data.length; i++) {
                 const initPwd = createInitPwd();
+
                 const student = {
                     "school_no": items.data[i][0],
                     "name": items.data[i][1],
@@ -108,7 +113,6 @@ function getAdminStudentExcel(req, res) {
             }
         }
         res.json(returnSuccessRes("上传成功"));
-
     });
 }
 
@@ -230,6 +234,23 @@ function addminUpdateStudent(req, res) {
     return;
 }
 
+function exportStudentExcel(req, res) {
+    Student.selectData()
+        .then(function (docs) {
+            if (docs.length < 1) {
+                return res.json(returnErrorRes("老师未导入excel数据，请先导入"));
+                return;
+            }
+            const arr = giveValue(docs);
+            const buffer = xlsx.build(arr);
+            fs.writeFile("./public/statics/student.xlsx", buffer, function () {
+                res.redirect("/statics/student.xlsx")
+                return;
+            });
+        });
+
+}
+
 exports.admin = admin;
 exports.adminLogin = adminLogin;
 exports.adminCondition = adminCondition;
@@ -240,3 +261,169 @@ exports.exit = exit;
 exports.adminAddOneStudent = adminAddOneStudent;
 exports.addminDeleteStudentBySchoolNo = addminDeleteStudentBySchoolNo;
 exports.addminUpdateStudent = addminUpdateStudent;
+exports.exportStudentExcel = exportStudentExcel;
+
+function giveValue(docs) {
+    const studentZero = [];
+    const studentOne = [];
+    const studentTwo = [];
+    const studentThree = [];
+    const studentFour = [];
+    const studentFifth = [];
+    const studentZeroObj = {
+        name: "初一",
+        data: studentZero
+    };
+    const studentOneObj = {
+        name: "初二",
+        data: studentOne
+    };
+    const studentTwoObj = {
+        name: "初三",
+        data: studentTwo
+    };
+    const studentThreeObj = {
+        name: "高一",
+        data: studentThree
+    };
+    const studentFourObj = {
+        name: "高二",
+        data: studentFour
+    };
+    const studentFifthObj = {
+        name: "高三",
+        data: studentFifth
+    };
+    const arr = [];
+    arr.push(studentZeroObj);
+    arr.push(studentOneObj);
+    arr.push(studentTwoObj);
+    arr.push(studentThreeObj);
+    arr.push(studentFourObj);
+    arr.push(studentFifthObj);
+    studentZero.push([
+        "学号",
+        "姓名",
+        "性别",
+        "密码",
+        "初始密码",
+        "是否已经修改初始密码",
+        "年级"
+    ]);
+    studentOne.push([
+        "学号",
+        "姓名",
+        "性别",
+        "密码",
+        "初始密码",
+        "是否已经修改初始密码",
+        "年级"
+    ]);
+    studentTwo.push([
+        "学号",
+        "姓名",
+        "性别",
+        "密码",
+        "初始密码",
+        "是否已经修改初始密码",
+        "年级"
+    ]);
+    studentThree.push([
+        "学号",
+        "姓名",
+        "性别",
+        "密码",
+        "初始密码",
+        "是否已经修改初始密码",
+        "年级"
+    ]);
+    studentFour.push([
+        "学号",
+        "姓名",
+        "性别",
+        "密码",
+        "初始密码",
+        "是否已经修改初始密码",
+        "年级"
+    ]);
+    studentFifth.push([
+        "学号",
+        "姓名",
+        "性别",
+        "密码",
+        "初始密码",
+        "是否已经修改初始密码",
+        "年级"
+    ]);
+    for (let item of docs) {
+        switch (item.grade) {
+            case 0:
+                studentZero.push([
+                    item.school_no,
+                    item.name,
+                    studentSexCodeToMsg(item.sex),
+                    item.pwd,
+                    item.init_pwd,
+                    studentIsModifyCodeToMsg(item.is_modify),
+                    studentGradeCodeToMsg(item.grade)
+                ]);
+                break;
+            case 1:
+                studentOne.push([
+                    item.school_no,
+                    item.name,
+                    studentSexCodeToMsg(item.sex),
+                    item.pwd,
+                    item.init_pwd,
+                    studentIsModifyCodeToMsg(item.is_modify),
+                    studentGradeCodeToMsg(item.grade)
+                ]);
+                break;
+            case 2:
+                studentTwo.push([
+                    item.school_no,
+                    item.name,
+                    studentSexCodeToMsg(item.sex),
+                    item.pwd,
+                    item.init_pwd,
+                    studentIsModifyCodeToMsg(item.is_modify),
+                    studentGradeCodeToMsg(item.grade)
+                ]);
+                break;
+            case 3:
+                studentThree.push([
+                    item.school_no,
+                    item.name,
+                    studentSexCodeToMsg(item.sex),
+                    item.pwd,
+                    item.init_pwd,
+                    studentIsModifyCodeToMsg(item.is_modify),
+                    studentGradeCodeToMsg(item.grade)
+                ]);
+                break;
+            case 4:
+                studentFour.push([
+                    item.school_no,
+                    item.name,
+                    studentSexCodeToMsg(item.sex),
+                    item.pwd,
+                    item.init_pwd,
+                    studentIsModifyCodeToMsg(item.is_modify),
+                    studentGradeCodeToMsg(item.grade)
+                ]);
+                break;
+            case 5:
+                studentFifth.push([
+                    item.school_no,
+                    item.name,
+                    studentSexCodeToMsg(item.sex),
+                    item.pwd,
+                    item.init_pwd,
+                    studentIsModifyCodeToMsg(item.is_modify),
+                    studentGradeCodeToMsg(item.grade)
+                ]);
+                break;
+        }
+    }
+    return arr;
+}

@@ -37,9 +37,7 @@ app.put("/admin/exit", adminController.exit);
 app.post("/admin/student/addition", adminController.adminAddOneStudent);
 app.delete("/admin/student/deletion/:school_no", adminController.addminDeleteStudentBySchoolNo);
 app.put("/admin/student/renewal/:school_no", adminController.addminUpdateStudent);
-// app.put("/admin/student/renewal/:school_no", function (req,res) {
-//     res.send("123");
-// });
+app.get("/admin/student/export",adminController.exportStudentExcel);
 
 
 app.get("/student", function (req, res) {

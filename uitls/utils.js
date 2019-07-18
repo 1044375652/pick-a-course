@@ -101,6 +101,32 @@ function studentSexMsgToCode(msg) {
     return code;
 }
 
+function studentIsModifyCodeToMsg(code) {
+    let msg = "";
+    switch (code) {
+        case 0 :
+            msg = "否";
+            break;
+        case 1 :
+            msg = "是";
+            break;
+    }
+    return msg;
+}
+
+function studentIsModifyMsgToCode(msg) {
+    let code = 0;
+    switch (msg) {
+        case  "否":
+            code = 0;
+            break;
+        case "是" :
+            code = 1;
+            break;
+    }
+    return code;
+}
+
 function createInitPwd() {
     const salt = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let pwd = "";
@@ -145,3 +171,5 @@ exports.studentSexCodeToMsg = studentSexCodeToMsg;
 exports.studentSexMsgToCode = studentSexMsgToCode;
 exports.createInitPwd = createInitPwd;
 exports.returnLimitArr = returnLimitArr;
+exports.studentIsModifyCodeToMsg = studentIsModifyCodeToMsg;
+exports.studentIsModifyMsgToCode = studentIsModifyMsgToCode;
