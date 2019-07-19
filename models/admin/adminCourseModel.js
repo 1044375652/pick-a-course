@@ -19,6 +19,11 @@ courseSchema.statics.selectData = function (limit) {
     return this.find(limit);
 };
 
+courseSchema.statics.deleteData = function () {
+    this.deleteMany({}, function () {
+    });
+};
+
 
 const Course = mongoose.model("Course", courseSchema, "course");
 

@@ -389,7 +389,7 @@
     });
 
     $("nav > .pagination").delegate(".nextPage", "click", function () {
-        if (vue.data.page > vue.data.count) {
+        if (vue.data.page >= vue.data.count) {
             toastr.warning("已经是顶页了");
             return;
         }

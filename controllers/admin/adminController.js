@@ -292,12 +292,11 @@ function getAdminCourseJson(req, res) {
                 item.allow[i] = studentGradeMsgToCode(item.allow[i]);
             }
         }
+        Course.deleteData();
         Course.addData(courseJsonObj.courses).then(function () {
             res.json(returnSuccessRes("上传成功"));
             return;
         });
-        res.json(returnErrorRes("上传失败"));
-        return;
     });
 }
 

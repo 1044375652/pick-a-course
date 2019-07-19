@@ -76,10 +76,10 @@
                 </button>
             </li>
             <li>
-                <button id="addOneStudent"
+                <button
                         class="btn btn-success"
                         data-toggle="modal"
-                        data-target="#addOneStudentModal"
+                        data-target="#addOneCourseModal"
                 >增加单个课程
                 </button>
             </li>
@@ -150,53 +150,33 @@
 </div>
 
 <!--增加单个学生 Modal-->
-<div class="modal fade" id="addOneStudentModal" tabindex="-1" role="dialog">
+<div class="modal fade" id="addOneCourseModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">增加单个学生</h4>
+                <h4 class="modal-title">增加单个课程</h4>
             </div>
             <div class="modal-body">
                 <form enctype="multipart/form-data" method="post">
                     <div class="form-group">
-                        <label for="addStudentSchoolNo">学号</label>
-                        <input data-check class="form-control" type="text" id="addStudentSchoolNo">
-                        <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
-                        <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
+                        <label for="addCourseCid">课程编号</label>
+                        <input type="text" class="form-control" id="addCourseCid">
                     </div>
                     <div class="form-group">
-                        <label for="addStudentName">姓名</label>
-                        <input data-check class="form-control" type="text" id="addStudentName">
-                        <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
-                        <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
+                        <label for="addCourseName">课程名称</label>
+                        <input type="text" class="form-control" id="addCourseName">
                     </div>
                     <div class="form-group">
-                        <label for="addStudentGrade">年级</label>
-                        <select id="addStudentGrade" class="form-control">
-                            <option value="0">初一</option>
-                            <option value="1">初二</option>
-                            <option value="2">初三</option>
-                            <option value="3">高一</option>
-                            <option value="4">高二</option>
-                            <option value="5">高三</option>
+                        <label for="">上课时间</label>
+                        <select class="form-control">
+                            <option value="1">周一</option>
+                            <option value="2">周二</option>
+                            <option value="3">周三</option>
+                            <option value="4">周四</option>
+                            <option value="5">周五</option>
                         </select>
-                    </div>
-                    <div class="form-group">
-                        <p><strong>性别</strong></p>
-                        <label class="radio-inline">
-                            <input type="radio" checked name="addStudentSex" id="inlineRadio1" value="0">男
-                        </label>
-                        <label class="radio-inline">
-                            <input type="radio" name="addStudentSex" id="inlineRadio2" value="1">女
-                        </label>
-                    </div>
-                    <div class="form-group">
-                        <label for="addStudentPwd">密码</label>
-                        <input data-check class="form-control" type="text" id="addStudentPwd">
-                        <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
-                        <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
                     </div>
                 </form>
             </div>
@@ -285,6 +265,7 @@
     </tr>
 
 
+
 </script>
 <script type="text/javascript" src="/js/jquery.min.js"></script>
 <script type="text/javascript" src="/js/bootstrap.js"></script>
@@ -340,7 +321,6 @@
                 count: vue.data.count,
             }
         }).then(function (data) {
-            console.log(data);
             if (data.status === 200 && data.data.code > 0) {
                 const res = data.data.data;
                 vue.data.page = parseInt(res.page);
@@ -385,7 +365,7 @@
     });
 
     $("nav > .pagination").delegate(".nextPage", "click", function () {
-        if (vue.data.page > vue.data.count) {
+        if (vue.data.page >= vue.data.count) {
             toastr.warning("已经是顶页了");
             return;
         }
