@@ -30,6 +30,7 @@ app.get("/", function (req, res) {
 app.get("/admin", adminController.admin);
 app.post("/admin/login", adminController.adminLogin);
 app.get("/admin/condition", adminController.adminCondition);
+// 学生管理
 app.get("/admin/student", adminController.getAdminStudentPage);
 app.post("/admin/student/excel", adminController.getAdminStudentExcel);
 app.get("/admin/student/detail", adminController.getAdminStudent);
@@ -38,7 +39,14 @@ app.post("/admin/student/addition", adminController.adminAddOneStudent);
 app.delete("/admin/student/deletion/:school_no", adminController.addminDeleteStudentBySchoolNo);
 app.put("/admin/student/renewal/:school_no", adminController.addminUpdateStudent);
 app.get("/admin/student/export",adminController.exportStudentExcel);
-
+// 课程管理
+app.get("/admin/course", adminController.getAdminCoursePage);
+app.post("/admin/course/json", adminController.getAdminCourseJson);
+app.get("/admin/course/detail", adminController.getAdminCourse);
+app.post("/admin/course/addition", adminController.adminAddOneStudent);
+app.delete("/admin/course/deletion/:school_no", adminController.addminDeleteStudentBySchoolNo);
+app.put("/admin/course/renewal/:school_no", adminController.addminUpdateStudent);
+app.get("/admin/course/export",adminController.exportStudentExcel);
 
 app.get("/student", function (req, res) {
     res.send("学生登录");

@@ -3,7 +3,7 @@
 <head>
     <meta charset='utf-8'>
     <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'>
-    <title>管理员面板 - 学生管理</title>
+    <title>管理员面板 - 课程管理</title>
     <link href="/css/application-a07755f5.css" rel="stylesheet" type="text/css"/>
     <link href="/css/iconfont.css" rel="stylesheet" type="text/css">
     <link href="/css/animate.min.css" rel="stylesheet" type="text/css">
@@ -41,11 +41,11 @@
                 <i class='iconfont'>&#xe61e;</i>
                 <a href="/admin/condition">选课状态</a>
             </li>
-            <li class='active launcher'>
+            <li class='launcher'>
                 <i class='iconfont'>&#xe7b2;</i>
                 <a href="/admin/student">学生管理</a>
             </li>
-            <li class='launcher'>
+            <li class='active launcher'>
                 <i class='iconfont'>&#xe7b4;</i>
                 <a href="/admin/course">课程管理</a>
             </li>
@@ -66,14 +66,13 @@
     <section id='tools'>
         <ul class='breadcrumb' id='breadcrumb'>
             <li class='active'>
-                学生清单
+                课程清单
             </li>
             <li>
-                <button id="importStudentExcel"
-                        data-toggle="modal"
-                        data-target="#importStudentExcelModal"
+                <button data-toggle="modal"
+                        data-target="#importCourseJsonModal"
                         class="btn btn-info"
-                >导入学生Excel表格
+                >导入课程json数据
                 </button>
             </li>
             <li>
@@ -81,13 +80,13 @@
                         class="btn btn-success"
                         data-toggle="modal"
                         data-target="#addOneStudentModal"
-                >增加单个学生
+                >增加单个课程
                 </button>
             </li>
             <li>
                 <a class="btn btn-default"
-                href="/admin/student/export"
-                >导出学生信息Excel表格
+                   href="/admin/student/export"
+                >导出课程信息Excel表格
                 </a>
             </li>
         </ul>
@@ -100,16 +99,16 @@
     <div class="table-responsive">
         <table class="table table-hover">
             <thead>
-            <th>学号</th>
-            <th>姓名</th>
-            <th>年级</th>
-            <th>性别</th>
-            <th>初始密码</th>
-            <th>加密后的密码</th>
-            <th>是否已修改初始密码</th>
+            <th>课程编号</th>
+            <th>课程名称</th>
+            <th>上课时间</th>
+            <th>剩余数量</th>
+            <th>授课教师</th>
+            <th>课程简介</th>
+            <th>允许报名的年级</th>
             <th>操作</th>
             </thead>
-            <tbody id="studentTmplTbody">
+            <tbody id="courseTmplTbody">
 
             </tbody>
         </table>
@@ -127,24 +126,24 @@
 </div>
 
 <!--导入学生Excel Modal-->
-<div class="modal fade" id="importStudentExcelModal" tabindex="-1" role="dialog">
+<div class="modal fade" id="importCourseJsonModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">导入学生Excel</h4>
+                <h4 class="modal-title">导入课程json</h4>
             </div>
             <div class="modal-body">
                 <form enctype="multipart/form-data" method="post">
                     <div class="form-group">
-                        <input type="file" id="studentExcel">
+                        <input type="file" id="courseJson">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="submitStudentExcel">Save changes</button>
+                <button type="button" class="btn btn-primary" id="submitCourseJson">Save changes</button>
             </div>
         </div>
     </div>
@@ -270,20 +269,22 @@
 </div>
 
 
-<script id="studentTmpl" type="text/x-jquery-tmpl">
+<script id="courseTmpl" type="text/x-jquery-tmpl">
     <tr>
-        <td>${school_no}</td>
+        <td>${cid}</td>
         <td>${name}</td>
-        <td>${grade}</td>
-        <td>${sex}</td>
-        <td>${init_pwd}</td>
-        <td>${pwd}</td>
-        <td>${is_modify}</td>
+        <td>${dayofweek}</td>
+        <td>${number}</td>
+        <td>${teacher}</td>
+        <td>${briefintro}</td>
+        <td>${allow}</td>
         <td>
-            <button class="btn btn-warning deleteBtn" onClick=deleteEvent(${school_no})>删除</button>
-            <button class="btn btn-info modifyBtn" onClick=modifyEvent(${school_no},"${name}","${grade}","${sex}","${init_pwd}")>修改</button>
+            <button class="btn btn-warning deleteBtn" onClick=deleteEvent(${cid})>删除</button>
+            <button class="btn btn-info modifyBtn">修改</button>
         </td>
     </tr>
+
+
 </script>
 <script type="text/javascript" src="/js/jquery.min.js"></script>
 <script type="text/javascript" src="/js/bootstrap.js"></script>
@@ -305,7 +306,7 @@
     let vue = new Vue();
     vue.data.keyword = $("#searchStudent").val();
 
-    $("#submitStudentExcel").on("click", function () {
+    $("#submitCourseJson").on("click", function () {
         if (confirm("提交后，之前所有的数据都会被清空，确定提交？")) {
             const config = {
                 headers: {
@@ -313,18 +314,18 @@
                 }
             };
             let formData = new FormData();
-            formData.append("studentExcel", $("#studentExcel")[0].files[0]);
-            axios.post("/admin/student/excel", formData, config)
+            formData.append("courseJson", $("#courseJson")[0].files[0]);
+            axios.post("/admin/course/json", formData, config)
                 .then(function (data) {
                     setTimeout(function () {
-                        $("#importStudentExcelModal").modal("hide");
+                        $("#importCourseJsonModal").modal("hide");
                         if (data.status === 200 && data.data.code > 0) {
                             const res = data.data;
                             toastr.success(res.msg);
                         } else {
                             toastr.warning(data.data.msg);
                         }
-                        location.hre = "/admin/student";
+                        location.hre = "/admin/course";
                     }, 500);
                 });
         }
@@ -332,13 +333,14 @@
 
     function getData(size = 1) {
         vue.data.data = [];
-        axios.get("/admin/student/detail", {
+        axios.get("/admin/course/detail", {
             params: {
                 page: size,
                 keyword: vue.data.keyword,
                 count: vue.data.count,
             }
         }).then(function (data) {
+            console.log(data);
             if (data.status === 200 && data.data.code > 0) {
                 const res = data.data.data;
                 vue.data.page = parseInt(res.page);
@@ -356,20 +358,14 @@
 
 
     function showData(items) {
-        $("#studentTmplTbody").empty();
-        console.log(items);
-        for (let item of items) {
-            const data = {
-                "school_no": item.school_no,
-                "name": item.name,
-                "grade": studentGradeCodeToMsg(item.grade),
-                "sex": studentSexCodeToMsg(item.sex),
-                "init_pwd": item.init_pwd,
-                "pwd": item.pwd,
-                "is_modify": studentIsModifyCodeToMsg(item.is_modify),
-            };
-            $.tmpl($("#studentTmpl"), data).appendTo("#studentTmplTbody");
+        $("#courseTmplTbody").empty();
+        for (let i = 0; i < items.length; i++) {
+            items[i].dayofweek = studentWeekCodeToMsg(items[i].dayofweek);
+            for (let j = 0; j < items[i].allow.length; j++) {
+                items[i].allow[j] = studentGradeCodeToMsg(items[i].allow[j]);
+            }
         }
+        $.tmpl($("#courseTmpl"), items).appendTo("#courseTmplTbody");
         $("nav > .pagination").empty();
         $("nav > .pagination")
             .append(`<li class="prePage"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>`)
@@ -466,22 +462,22 @@
     function studentGradeCodeToMsg(code) {
         let msg = "";
         switch (code) {
-            case 0 :
+            case "0" :
                 msg = "初一";
                 break;
-            case 1 :
+            case "1" :
                 msg = "初二";
                 break;
-            case 2 :
+            case "2" :
                 msg = "初三";
                 break;
-            case 3 :
+            case "3" :
                 msg = "高一";
                 break;
-            case 4 :
+            case "4" :
                 msg = "高二";
                 break;
-            case 5 :
+            case "5" :
                 msg = "高三";
                 break;
         }
@@ -489,25 +485,25 @@
     }
 
     function studentGradeMsgToCode(msg) {
-        let code = 0;
+        let code = "0";
         switch (msg) {
             case "初一" :
-                code = 0;
+                code = "0";
                 break;
             case "初二" :
                 code = "1";
                 break;
             case "初三" :
-                code = 2;
+                code = "2";
                 break;
             case "高一" :
-                code = 3;
+                code = "3";
                 break;
             case "高二" :
-                code = 4;
+                code = "4";
                 break;
             case "高三" :
-                code = 5;
+                code = "5";
                 break;
         }
         return code;
@@ -668,7 +664,50 @@
 
     });
 
+    function studentWeekCodeToMsg(code) {
+        let msg = "";
+        switch (code) {
+            case "1" :
+                msg = "周一";
+                break;
+            case "2" :
+                msg = "周二";
+                break;
+            case "3" :
+                msg = "周三";
+                break;
+            case "4" :
+                msg = "周四";
+                break;
+            case "5" :
+                msg = "周五";
+                break;
+        }
+        return msg;
+    }
 
+
+    function studentWeekMsgToCode(msg) {
+        let code = "0";
+        switch (msg) {
+            case "周一" :
+                code = "1";
+                break;
+            case "周二" :
+                code = "2";
+                break;
+            case "周三" :
+                code = "3";
+                break;
+            case "周四" :
+                code = "4";
+                break;
+            case "周五" :
+                code = "5";
+                break;
+        }
+        return code;
+    }
 </script>
 </body>
 </html>

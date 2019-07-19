@@ -56,7 +56,7 @@ function studentGradeMsgToCode(msg) {
             code = 0;
             break;
         case "初二" :
-            code = "1";
+            code = 1;
             break;
         case "初三" :
             code = 2;
@@ -69,6 +69,52 @@ function studentGradeMsgToCode(msg) {
             break;
         case "高三" :
             code = 5;
+            break;
+    }
+    return code;
+}
+
+
+function studentWeekCodeToMsg(code) {
+    let msg = "";
+    switch (code) {
+        case "1" :
+            msg = "周一";
+            break;
+        case "2" :
+            msg = "周二";
+            break;
+        case "3" :
+            msg = "周三";
+            break;
+        case "4" :
+            msg = "周四";
+            break;
+        case "5" :
+            msg = "周五";
+            break;
+    }
+    return msg;
+}
+
+
+function studentWeekMsgToCode(msg) {
+    let code = "0";
+    switch (msg) {
+        case "周一" :
+            code = "1";
+            break;
+        case "周二" :
+            code = "2";
+            break;
+        case "周三" :
+            code = "3";
+            break;
+        case "周四" :
+            code = "4";
+            break;
+        case "周五" :
+            code = "5";
             break;
     }
     return code;
@@ -173,3 +219,5 @@ exports.createInitPwd = createInitPwd;
 exports.returnLimitArr = returnLimitArr;
 exports.studentIsModifyCodeToMsg = studentIsModifyCodeToMsg;
 exports.studentIsModifyMsgToCode = studentIsModifyMsgToCode;
+exports.studentWeekCodeToMsg = studentWeekCodeToMsg;
+exports.studentWeekMsgToCode = studentWeekMsgToCode;

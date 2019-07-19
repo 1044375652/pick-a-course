@@ -13,6 +13,7 @@ const formidable = require("formidable");
 const xlsx = require("node-xlsx");
 const fs = require('fs');
 const Student = require("../../models/student/studentModel");
+const Course = require("../../models/admin/adminCourseModel");
 
 
 function admin(req, res) {
@@ -251,9 +252,111 @@ function exportStudentExcel(req, res) {
 
 }
 
+//课程管理
+function getAdminCoursePage(req, res) {
+    if (!req.session.userName) {
+        res.json(returnErrorRes("您还未登录，请登录", {
+            "url": "/admin/login"
+        }));
+    } else {
+        res.render("admin/course");
+    }
+}
+
+function getAdminCourseJson(req, res) {
+    let form = new formidable.IncomingForm();
+    form.keepExtensions = true;
+    form.uploadDir = './upload/';
+    form.parse(req, function (err, fields, files) {
+        if (err) {
+            res.json(returnErrorRes("上传失败"));
+            return;
+        }
+        if (JSON.stringify(files) === "{}") {
+            res.json(returnErrorRes("请选择文件"));
+            return;
+        }
+        if (!files.hasOwnProperty("courseJson")) {
+            res.json(returnErrorRes("上传失败"));
+            return;
+        }
+        const reg = RegExp(/.json/);
+        if (!reg.test(files.courseJson.name)) {
+            fs.unlinkSync(files.courseJson.path);
+            res.json(returnErrorRes("请上传json格式的文件"));
+            return;
+        }
+        const courseJsonObj = JSON.parse(fs.readFileSync(files.courseJson.path).toString());
+        for (let item of courseJsonObj.courses) {
+            for (let i = 0; i < item.allow.length; i++) {
+                item.allow[i] = studentGradeMsgToCode(item.allow[i]);
+            }
+        }
+        Course.addData(courseJsonObj.courses).then(function () {
+            res.json(returnSuccessRes("上传成功"));
+            return;
+        });
+        res.json(returnErrorRes("上传失败"));
+        return;
+    });
+}
+
+function getAdminCourse(req, res) {
+    const page = parseInt(req.query.page);
+    const count = parseInt(req.query.count);
+    if (page < 1) {
+        res.json(returnErrorRes("page不能小于1"));
+        return;
+    }
+    if (count > 1 && page > count) {
+        res.json(returnErrorRes("page太大了"));
+        return;
+    }
+    const index = page - 1;
+    const size = 10;
+    const keyword = req.query.keyword;
+    let limit = {};
+    if (keyword.length > 1) {
+        const reg = new RegExp(keyword, "gi");
+        limit = {
+            $or: [
+                {
+                    "cid": {
+                        $regex: reg
+                    }
+                },
+                {
+                    "dayofweek": {
+                        $regex: reg
+                    }
+                },
+                {
+                    "teacher": {
+                        $regex: reg
+                    }
+                }
+            ]
+        };
+    }
+
+    Course.selectData(limit).then(function (docs) {
+        const count = Math.ceil(docs.length / size);
+        const lastIndex = ((index * 10 + size) > docs.length) ? docs.length : (index * 10 + size);
+        const courseArr = returnLimitArr(docs, index * 10, lastIndex);
+        const newPage = page;
+        return res.json(returnSuccessRes("请求数据成功", {
+            "count": count,
+            "page": newPage,
+            "data": courseArr
+        }));
+    });
+
+}
+
 exports.admin = admin;
 exports.adminLogin = adminLogin;
 exports.adminCondition = adminCondition;
+// 学生管理
 exports.getAdminStudentPage = getAdminStudentPage;
 exports.getAdminStudentExcel = getAdminStudentExcel;
 exports.getAdminStudent = getAdminStudent;
@@ -262,6 +365,10 @@ exports.adminAddOneStudent = adminAddOneStudent;
 exports.addminDeleteStudentBySchoolNo = addminDeleteStudentBySchoolNo;
 exports.addminUpdateStudent = addminUpdateStudent;
 exports.exportStudentExcel = exportStudentExcel;
+// 课程管理
+exports.getAdminCoursePage = getAdminCoursePage;
+exports.getAdminCourseJson = getAdminCourseJson;
+exports.getAdminCourse = getAdminCourse;
 
 function giveValue(docs) {
     const studentZero = [];
