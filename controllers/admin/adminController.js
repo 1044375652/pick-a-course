@@ -249,7 +249,6 @@ function exportStudentExcel(req, res) {
                 return;
             });
         });
-
 }
 
 //课程管理
@@ -453,6 +452,36 @@ function adminUpdateCourse(req, res) {
     }
 }
 
+function exportCourseExcel(req, res) {
+    Course.selectData()
+        .then(function (docs) {
+            if (docs.length < 1) {
+                return res.json(returnErrorRes("老师未导入数据，请先导入"));
+            }
+            const data = [];
+            for (let item of docs) {
+                const d = [];
+                d.push(item.allow);
+                d.push(item.cid);
+                d.push(item.name);
+                d.push(item.dayofweek);
+                d.push(item.number);
+                d.push(item.teacher);
+                d.push(item.briefintro);
+                data.push(d);
+            }
+            const arr = [];
+            arr.push({
+                "name": "课程信息",
+                "data": data
+            });
+            const buffer = xlsx.build(arr);
+            fs.writeFile("./public/statics/course.xlsx", buffer, function () {
+                return res.redirect("/statics/course.xlsx");
+            });
+        });
+}
+
 exports.admin = admin;
 exports.adminLogin = adminLogin;
 exports.adminCondition = adminCondition;
@@ -472,6 +501,7 @@ exports.getAdminCourse = getAdminCourse;
 exports.adminAddOneCourse = adminAddOneCourse;
 exports.adminDeleteCourseByCid = adminDeleteCourseByCid;
 exports.adminUpdateCourse = adminUpdateCourse;
+exports.exportCourseExcel = exportCourseExcel;
 
 function giveValue(docs) {
     const studentZero = [];

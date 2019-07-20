@@ -46,7 +46,7 @@ app.get("/admin/course/detail", adminController.getAdminCourse);
 app.post("/admin/course/addition", adminController.adminAddOneCourse);
 app.delete("/admin/course/deletion/:cid", adminController.adminDeleteCourseByCid);
 app.put("/admin/course/renewal/:cid", adminController.adminUpdateCourse);
-app.get("/admin/course/export",adminController.exportStudentExcel);
+app.get("/admin/course/export",adminController.exportCourseExcel);
 
 app.get("/student", function (req, res) {
     res.send("学生登录");
