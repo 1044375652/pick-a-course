@@ -53,6 +53,8 @@ app.get("/admin/course/export", adminController.exportCourseExcel);
 app.get("/login_page", studentController.getLoginPage);
 app.post("/student/login", studentController.login);
 app.get("/index", studentController.index);
+app.get("/student/course/detail", studentController.getStudentCourse);
+app.put("/student/exit", studentController.exit);
 
 app.get("/student", function (req, res) {
     res.send("学生登录");
