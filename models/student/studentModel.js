@@ -37,6 +37,10 @@ studentSchema.statics.updateStudentMsg = function (schoolNo, obj) {
     });
 };
 
+studentSchema.statics.selectOneAndUpdate = function (query, update) {
+    return this.findOneAndUpdate(query, update);
+};
+
 const Student = mongoose.model("Student", studentSchema, "student");
 
 

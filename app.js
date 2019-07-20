@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
 
-mongoose.connect("mongodb://localhost:27017/pick-course", {useNewUrlParser: true});
+mongoose.connect("mongodb://localhost:27017/pick-course", {useNewUrlParser: true, useFindAndModify: false});
 
 let app = express();
 
@@ -55,6 +55,7 @@ app.post("/student/login", studentController.login);
 app.get("/index", studentController.index);
 app.get("/student/course/detail", studentController.getStudentCourse);
 app.put("/student/exit", studentController.exit);
+app.put("/student/course/renewal/:school_no", studentController.modifyPwdBySchoolNo);
 
 app.get("/student", function (req, res) {
     res.send("学生登录");
