@@ -6,7 +6,6 @@ const Course = require("../../models/admin/adminCourseModel");
 const {returnLimitArr} = require("../../uitls/utils");
 
 
-
 function index(req, res) {
     if (isLogin(req)) {
         res.render("student/index");
@@ -62,10 +61,13 @@ function getStudentCourse(req, res) {
     const index = page - 1;
     const size = 10;
     const keyword = req.query.keyword;
-    let limit = {};
+    let limit = {
+        "allow": req.session.grade
+    };
     if (keyword.length > 0) {
         const reg = new RegExp(keyword, "gi");
         limit = {
+            "allow": req.session.grade,
             $or: [
                 {
                     "cid": {
@@ -108,8 +110,6 @@ function isLogin(req) {
         return false;
     }
 }
-
-
 
 
 exports.getLoginPage = getLoginPage;
