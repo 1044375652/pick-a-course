@@ -15,6 +15,11 @@ courseSchema.statics.addData = function (data) {
     return this.insertMany(data);
 };
 
+courseSchema.statics.addOneData = function (data) {
+    const course = new Course(data);
+    return course.save();
+};
+
 courseSchema.statics.selectData = function (limit) {
     return this.find(limit);
 };
@@ -23,6 +28,12 @@ courseSchema.statics.deleteData = function () {
     this.deleteMany({}, function () {
     });
 };
+
+courseSchema.statics.deleteDataByCid = function (limit) {
+    return this.deleteOne(limit);
+};
+
+
 
 
 const Course = mongoose.model("Course", courseSchema, "course");

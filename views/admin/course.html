@@ -125,7 +125,7 @@
 </div>
 </div>
 
-<!--导入学生Excel Modal-->
+<!--导入课程JSON Modal-->
 <div class="modal fade" id="importCourseJsonModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -149,7 +149,7 @@
     </div>
 </div>
 
-<!--增加单个学生 Modal-->
+<!--增加单个课程 Modal-->
 <div class="modal fade" id="addOneCourseModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -159,30 +159,77 @@
                 <h4 class="modal-title">增加单个课程</h4>
             </div>
             <div class="modal-body">
-                <form enctype="multipart/form-data" method="post">
+                <form id="addCourseForm">
                     <div class="form-group">
                         <label for="addCourseCid">课程编号</label>
-                        <input type="text" class="form-control" id="addCourseCid">
+                        <input data-check type="text" class="form-control" id="addCourseCid" name="cid">
+                        <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
+                        <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
                     </div>
                     <div class="form-group">
                         <label for="addCourseName">课程名称</label>
-                        <input type="text" class="form-control" id="addCourseName">
+                        <input data-check type="text" class="form-control" id="addCourseName" name="name">
+                        <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
+                        <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
                     </div>
                     <div class="form-group">
-                        <label for="">上课时间</label>
-                        <select class="form-control">
-                            <option value="1">周一</option>
+                        <label>上课时间</label>
+                        <select class="form-control" name="dayofweek">
+                            <option value="1" selected>周一</option>
                             <option value="2">周二</option>
                             <option value="3">周三</option>
                             <option value="4">周四</option>
                             <option value="5">周五</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label for="addCourseNum">剩余数量</label>
+                        <input data-check type="number" class="form-control" id="addCourseNum" name="number">
+                        <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
+                        <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="addCourseTeacher">授课教师</label>
+                        <input data-check type="text" class="form-control" id="addCourseTeacher"
+                               name="teacher">
+                        <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
+                        <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
+                    </div>
+                    <label>课程简介</label>
+                    <textarea data-check class="form-control" rows="3" style="resize: none" name="briefintro"
+                              id="addCourseInfo"></textarea>
+                    <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
+                    <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
+                    <label>
+                        允许申报的年级
+                    </label>
+                    <div class="checkbox">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" value="0" name="allow" checked>初一
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" value="1" name="allow">初二
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" value="2" name="allow">初三
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" value="3" name="allow">高一
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" value="4" name="allow">高二
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" value="5" name="allow">高三
+                            <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
+                            <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
+                        </label>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="submitStudentAddBtn" disabled>Save changes</button>
+                <button type="button" class="btn btn-primary" id="submitCourseAddBtn" disabled>Save changes</button>
             </div>
         </div>
     </div>
@@ -263,9 +310,6 @@
             <button class="btn btn-info modifyBtn">修改</button>
         </td>
     </tr>
-
-
-
 </script>
 <script type="text/javascript" src="/js/jquery.min.js"></script>
 <script type="text/javascript" src="/js/bootstrap.js"></script>
@@ -379,6 +423,7 @@
     $("nav > .pagination").delegate(".pages a", "click", function (e) {
         e.preventDefault();
     });
+
     $("#pagesDiv").delegate(".page a", "click", function (e) {
         e.preventDefault();
     });
@@ -541,12 +586,14 @@
     });
 
     let illegal = {
-        "addStudentName": true,
-        "addStudentPwd": true,
-        "addStudentSchoolNo": true
+        "addCourseCid": true,
+        "addCourseName": true,
+        "addCourseNum": true,
+        "addCourseTeacher": true,
+        "addCourseInfo": true
     };
 
-    const submitStudentAddBtn = $('#submitStudentAddBtn');
+    const submitCourseAddBtn = $('#submitCourseAddBtn');
 
     $.fn.extend({
         toggleMsg: function (className, display) {
@@ -558,11 +605,11 @@
         if ($(this).val().length > 0) {
             let index = $(this).attr("id");
             illegal[index] = false;
-            submitStudentAddBtn.attr("disabled", false);
+            submitCourseAddBtn.attr("disabled", false);
             $(this).toggleMsg(".alert-success", "block");
             for (let key in illegal) {
                 if (illegal[key]) {
-                    submitStudentAddBtn.attr("disabled", true);
+                    submitCourseAddBtn.attr("disabled", true);
                 }
             }
         } else {
@@ -575,15 +622,25 @@
     });
 
 
-    submitStudentAddBtn.on("click", function () {
+    submitCourseAddBtn.on("click", function () {
+        const formDataArr = $("#addCourseForm").serializeArray();
         const data = {
-            "userName": $("#addStudentName").val(),
-            "schoolNo": $("#addStudentSchoolNo").val(),
-            "grade": $("#addStudentGrade").val(),
-            "sex": $("[name=addStudentSex]:checked").val(),
-            "initPwd": $("#addStudentPwd").val(),
+            "cid": "",
+            "name": "",
+            "dayofweek": "",
+            "number": "",
+            "teacher": "",
+            "briefintro": "",
+            "allow": []
         };
-        axios.post("/admin/student/addition", data).then(function (data) {
+        for (let item of formDataArr) {
+            if (item.name == 'allow') {
+                data[item.name].push(item.value);
+                continue;
+            }
+            data[item.name] = item.value;
+        }
+        axios.post("/admin/course/addition", data).then(function (data) {
             if (data.status === 200 && data.data.code > 0) {
                 const res = data.data;
                 toastr.success(res.msg);
@@ -591,14 +648,14 @@
                     location.reload();
                 }, 500);
             } else {
-                toastr.success(data.data.msg);
+                toastr.warning(data.data.msg);
             }
         });
     });
 
-    function deleteEvent(schoolNo) {
-        if (confirm("你确定删除学号：" + schoolNo + "的学生吗?")) {
-            axios.delete("/admin/student/deletion/" + schoolNo).then(function (data) {
+    function deleteEvent(cid) {
+        if (confirm("你确定删除课程编号：" + cid + "吗?")) {
+            axios.delete("/admin/course/deletion/" + cid).then(function (data) {
                 if (data.status === 200 && data.data.code > 0) {
                     const res = data.data;
                     toastr.success(res.msg);

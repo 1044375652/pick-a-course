@@ -36,16 +36,16 @@ app.post("/admin/student/excel", adminController.getAdminStudentExcel);
 app.get("/admin/student/detail", adminController.getAdminStudent);
 app.put("/admin/exit", adminController.exit);
 app.post("/admin/student/addition", adminController.adminAddOneStudent);
-app.delete("/admin/student/deletion/:school_no", adminController.addminDeleteStudentBySchoolNo);
-app.put("/admin/student/renewal/:school_no", adminController.addminUpdateStudent);
+app.delete("/admin/student/deletion/:school_no", adminController.adminDeleteStudentBySchoolNo);
+app.put("/admin/student/renewal/:school_no", adminController.adminUpdateStudent);
 app.get("/admin/student/export",adminController.exportStudentExcel);
 // 课程管理
 app.get("/admin/course", adminController.getAdminCoursePage);
 app.post("/admin/course/json", adminController.getAdminCourseJson);
 app.get("/admin/course/detail", adminController.getAdminCourse);
-app.post("/admin/course/addition", adminController.adminAddOneStudent);
-app.delete("/admin/course/deletion/:school_no", adminController.addminDeleteStudentBySchoolNo);
-app.put("/admin/course/renewal/:school_no", adminController.addminUpdateStudent);
+app.post("/admin/course/addition", adminController.adminAddOneCourse);
+app.delete("/admin/course/deletion/:cid", adminController.adminDeleteCourseByCid);
+app.put("/admin/course/renewal/:school_no", adminController.adminUpdateStudent);
 app.get("/admin/course/export",adminController.exportStudentExcel);
 
 app.get("/student", function (req, res) {

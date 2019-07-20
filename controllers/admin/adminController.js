@@ -201,7 +201,7 @@ function adminAddOneStudent(req, res) {
     }
 }
 
-function addminDeleteStudentBySchoolNo(req, res) {
+function adminDeleteStudentBySchoolNo(req, res) {
     if (req.params.hasOwnProperty("school_no")) {
         const deletePeople = {
             "school_no": req.params.school_no
@@ -214,7 +214,7 @@ function addminDeleteStudentBySchoolNo(req, res) {
     return;
 }
 
-function addminUpdateStudent(req, res) {
+function adminUpdateStudent(req, res) {
     if (req.params.hasOwnProperty("school_no") &&
         req.body.hasOwnProperty("userName") &&
         req.body.hasOwnProperty("grade") &&
@@ -349,7 +349,79 @@ function getAdminCourse(req, res) {
             "data": courseArr
         }));
     });
+}
 
+
+function adminAddOneCourse(req, res) {
+    if (req.body.hasOwnProperty("cid") &&
+        req.body.hasOwnProperty("name") &&
+        req.body.hasOwnProperty("dayofweek") &&
+        req.body.hasOwnProperty("number") &&
+        req.body.hasOwnProperty("teacher") &&
+        req.body.hasOwnProperty("briefintro") &&
+        req.body.hasOwnProperty("allow")) {
+        const cid = req.body.cid;
+        const name = req.body.name;
+        const dayOfWeek = req.body.dayofweek;
+        const number = parseInt(req.body.number);
+        const teacher = req.body.teacher;
+        const briefIntro = req.body.briefintro;
+        const allow = req.body.allow;
+        const course = {
+            "cid": cid,
+            "name": name,
+            "dayofweek": dayOfWeek,
+            "number": number,
+            "teacher": teacher,
+            "briefintro": briefIntro,
+            "allow": allow
+        };
+        console.log(course.allow);
+        const limit = {
+            $or: [
+                {"cid": cid},
+                {"name": name}
+            ]
+        };
+        Course.selectData(limit).then(function (docs) {
+            if (docs.length > 0) {
+                res.json(returnErrorRes("当前已经拥有该课程或课程编号了"));
+                return -1;
+            }
+            return 200;
+        }).then(function (status) {
+            if (status < 0) {
+                return -1;
+            }
+            Course.addOneData(course);
+            return 200;
+        }).then(function (status) {
+            if (status > 0) {
+                return res.json(returnSuccessRes("添加成功"));
+            }
+            return;
+        });
+    } else {
+        res.json(returnErrorRes("数据不全"));
+        return;
+    }
+}
+
+function adminDeleteCourseByCid(req, res) {
+    if (req.params.hasOwnProperty("cid")) {
+        const deleteCourse = {
+            "cid": req.params.cid
+        };
+        Course.deleteDataByCid(deleteCourse).then(function (next) {
+            if (next.ok == 1) {
+                return res.json(returnSuccessRes("删除成功"));
+            }
+            return res.json(returnErrorRes("没有此课程！"));
+        });
+        return;
+    }
+    res.json(returnErrorRes("数据不全"));
+    return;
 }
 
 exports.admin = admin;
@@ -361,13 +433,15 @@ exports.getAdminStudentExcel = getAdminStudentExcel;
 exports.getAdminStudent = getAdminStudent;
 exports.exit = exit;
 exports.adminAddOneStudent = adminAddOneStudent;
-exports.addminDeleteStudentBySchoolNo = addminDeleteStudentBySchoolNo;
-exports.addminUpdateStudent = addminUpdateStudent;
+exports.adminDeleteStudentBySchoolNo = adminDeleteStudentBySchoolNo;
+exports.adminUpdateStudent = adminUpdateStudent;
 exports.exportStudentExcel = exportStudentExcel;
 // 课程管理
 exports.getAdminCoursePage = getAdminCoursePage;
 exports.getAdminCourseJson = getAdminCourseJson;
 exports.getAdminCourse = getAdminCourse;
+exports.adminAddOneCourse = adminAddOneCourse;
+exports.adminDeleteCourseByCid = adminDeleteCourseByCid;
 
 function giveValue(docs) {
     const studentZero = [];
