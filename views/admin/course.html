@@ -236,8 +236,8 @@
 </div>
 
 
-<!--修改学生信息 Modal-->
-<div class="modal fade" id="modifyOneStudentModal" tabindex="-1" role="dialog">
+<!--修改课程信息 Modal-->
+<div class="modal fade" id="modifyOneCourseModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -246,50 +246,77 @@
                 <h4 class="modal-title">修改学生信息</h4>
             </div>
             <div class="modal-body">
-                <form enctype="multipart/form-data" method="post">
+                <form id="modifyCourseForm">
                     <div class="form-group">
-                        <label for="modifyStudentSchoolNo">学号</label>
-                        <input data-check class="form-control" type="text" id="modifyStudentSchoolNo">
+                        <label for="modifyCourseCid">课程编号</label>
+                        <input data-check type="text" class="form-control" id="modifyCourseCid" name="cid">
                         <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
                         <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
                     </div>
                     <div class="form-group">
-                        <label for="modifyStudentName">姓名</label>
-                        <input data-check class="form-control" type="text" id="modifyStudentName">
+                        <label for="modifyCourseName">课程名称</label>
+                        <input data-check type="text" class="form-control" id="modifyCourseName" name="name">
                         <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
                         <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
                     </div>
                     <div class="form-group">
-                        <label for="modifyStudentGrade">年级</label>
-                        <select id="modifyStudentGrade" class="form-control">
-                            <option value="0">初一</option>
-                            <option value="1">初二</option>
-                            <option value="2">初三</option>
-                            <option value="3">高一</option>
-                            <option value="4">高二</option>
-                            <option value="5">高三</option>
+                        <label>上课时间</label>
+                        <select class="form-control" id="modifyDayOfWeek" name="dayofweek">
+                            <option value="1">周一</option>
+                            <option value="2">周二</option>
+                            <option value="3">周三</option>
+                            <option value="4">周四</option>
+                            <option value="5">周五</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <p><strong>性别</strong></p>
-                        <label class="radio-inline">
-                            <input type="radio" checked name="modifyStudentSex" value="0">男
-                        </label>
-                        <label class="radio-inline">
-                            <input type="radio" name="modifyStudentSex" value="1">女
-                        </label>
-                    </div>
-                    <div class="form-group">
-                        <label for="addStudentPwd">密码</label>
-                        <input data-check class="form-control" type="text" id="modifyStudentPwd">
+                        <label for="modifyCourseNum">剩余数量</label>
+                        <input data-check type="number" class="form-control" id="modifyCourseNum" name="number">
                         <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
                         <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="modifyCourseTeacher">授课教师</label>
+                        <input data-check type="text" class="form-control" id="modifyCourseTeacher"
+                               name="teacher">
+                        <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
+                        <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
+                    </div>
+                    <label>课程简介</label>
+                    <textarea data-check class="form-control" rows="3" style="resize: none" name="briefintro"
+                              id="modifyCourseInfo"></textarea>
+                    <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
+                    <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
+                    <label>
+                        允许申报的年级
+                    </label>
+                    <div class="checkbox" >
+                        <label class="checkbox-inline">
+                            <input type="checkbox" value="0" name="allow">初一
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" value="1" name="allow">初二
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" value="2" name="allow">初三
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" value="3" name="allow">高一
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" value="4" name="allow">高二
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" value="5" name="allow">高三
+                            <div class="alert alert-success" role="alert" style="display: none">数据合法</div>
+                            <div class="alert alert-danger" role="alert" style="display: none">数据不合法</div>
+                        </label>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="submitStudentModifyBtn">Save changes</button>
+                <button type="button" class="btn btn-primary" id="submitCourseModifyBtn">Save changes</button>
             </div>
         </div>
     </div>
@@ -307,9 +334,22 @@
         <td>${allow}</td>
         <td>
             <button class="btn btn-warning deleteBtn" onClick=deleteEvent(${cid})>删除</button>
-            <button class="btn btn-info modifyBtn">修改</button>
+            <button class="btn btn-info modifyBtn"
+                    data-cid="${cid}"
+                    data-name="${name}"
+                    data-dayofweek="${dayofweek}"
+                    data-number="${number}"
+                    data-teacher="${teacher}"
+                    data-briefintro="${briefintro}"
+                    data-allow="${allow}">修改</button>
         </td>
     </tr>
+
+
+
+
+
+
 </script>
 <script type="text/javascript" src="/js/jquery.min.js"></script>
 <script type="text/javascript" src="/js/bootstrap.js"></script>
@@ -535,19 +575,6 @@
     }
 
 
-    function studentSexCodeToMsg(code) {
-        let msg = "";
-        switch (code) {
-            case 0 :
-                msg = "男";
-                break;
-            case 1 :
-                msg = "女";
-                break;
-        }
-        return msg;
-    }
-
     function studentSexMsgToCode(msg) {
         let code = 0;
         switch (msg) {
@@ -561,19 +588,6 @@
         return code;
     }
 
-
-    function studentIsModifyCodeToMsg(code) {
-        let msg = "";
-        switch (code) {
-            case 0 :
-                msg = "否";
-                break;
-            case 1 :
-                msg = "是";
-                break;
-        }
-        return msg;
-    }
 
     $("#navbar > ul > li > ul > li > a").on("click", function () {
         axios.put("/admin/exit").then(function (data) {
@@ -670,24 +684,45 @@
 
     }
 
-    function modifyEvent(schoolNo, name, grade, sex, initPwd) {
-        $("#modifyStudentName").val(name);
-        $("#modifyStudentSchoolNo").val(schoolNo);
-        $("#modifyStudentGrade option[value=" + studentGradeMsgToCode(grade) + "]").attr("selected", true);
-        $("[name=modifyStudentSex][value=" + studentSexMsgToCode(sex) + "]").attr("checked", true);
-        $("#modifyStudentPwd").val(initPwd);
-        $("#modifyOneStudentModal").modal("show");
+    $("#courseTmplTbody").delegate(".modifyBtn", "click", modifyEvent);
+
+    function modifyEvent() {
+        $("#modifyOneCourseModal [name=allow]").each(function () {
+            $(this).attr("checked",false);
+        });
+        $("#modifyCourseCid").val($(this).data("cid"));
+        $("#modifyCourseName").val($(this).data("name"));
+        $("#modifyDayOfWeek option[value=" + studentWeekMsgToCode($(this).data("dayofweek")) + "]").prop("selected", true);
+        $("#modifyCourseNum").val($(this).data("number"));
+        $("#modifyCourseTeacher").val($(this).data("teacher"));
+        $("#modifyCourseInfo").val($(this).data("briefintro"));
+        const allowArr = $(this).data("allow").split(",");
+        for (let item of allowArr) {
+            $("#modifyOneCourseModal [name=allow][value=" + courseGradeMsgToCode(item) + "]").attr("checked", true);
+        }
+        $("#modifyOneCourseModal").modal("show");
     }
 
-    $("#submitStudentModifyBtn").on("click", function () {
-        const schoolNo = $("#modifyStudentSchoolNo").val();
+
+    $("#submitCourseModifyBtn").on("click", function () {
+        const formDataArr = $("#modifyCourseForm").serializeArray();
         const data = {
-            "userName": $("#modifyStudentName").val(),
-            "grade": $("#modifyStudentGrade").val(),
-            "sex": $("[name=modifyStudentSex]:checked").val(),
-            "initPwd": $("#modifyStudentPwd").val(),
+            "cid": "",
+            "name": "",
+            "dayofweek": "",
+            "number": "",
+            "teacher": "",
+            "briefintro": "",
+            "allow": []
         };
-        axios.put("/admin/student/renewal/" + schoolNo, data).then(function (data) {
+        for (let item of formDataArr) {
+            if (item.name == 'allow') {
+                data[item.name].push(item.value);
+                continue;
+            }
+            data[item.name] = item.value;
+        }
+        axios.put("/admin/course/renewal/" + data.cid, data).then(function (data) {
             if (data.status === 200 && data.data.code > 0) {
                 const res = data.data;
                 toastr.success(res.msg);
@@ -723,7 +758,6 @@
         return msg;
     }
 
-
     function studentWeekMsgToCode(msg) {
         let code = "0";
         switch (msg) {
@@ -745,6 +779,59 @@
         }
         return code;
     }
+
+
+    function courseGradeCodeToMsg(code) {
+        let msg = "";
+        switch (code) {
+            case "0" :
+                msg = "初一";
+                break;
+            case "1" :
+                msg = "初二";
+                break;
+            case "2" :
+                msg = "初三";
+                break;
+            case "3" :
+                msg = "高一";
+                break;
+            case "4" :
+                msg = "高二";
+                break;
+            case "5" :
+                msg = "高三";
+                break;
+        }
+        return msg;
+    }
+
+    function courseGradeMsgToCode(msg) {
+        let code = "0";
+        switch (msg) {
+            case "初一" :
+                code = "0";
+                break;
+            case "初二" :
+                code = "1";
+                break;
+            case "初三" :
+                code = "2";
+                break;
+            case "高一" :
+                code = "3";
+                break;
+            case "高二" :
+                code = "4";
+                break;
+            case "高三" :
+                code = "5";
+                break;
+        }
+        return code;
+    }
+
+
 </script>
 </body>
 </html>

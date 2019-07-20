@@ -424,6 +424,35 @@ function adminDeleteCourseByCid(req, res) {
     return;
 }
 
+function adminUpdateCourse(req, res) {
+    if (req.params.hasOwnProperty("cid") &&
+        req.body.hasOwnProperty("name") &&
+        req.body.hasOwnProperty("dayofweek") &&
+        req.body.hasOwnProperty("number") &&
+        req.body.hasOwnProperty("teacher") &&
+        req.body.hasOwnProperty("briefintro") &&
+        req.body.hasOwnProperty("allow")) {
+        const cid = req.params.cid;
+        const obj = {
+            "name": req.body.name,
+            "dayofweek": req.body.dayofweek,
+            "number": parseInt(req.body.number),
+            "teacher": req.body.teacher,
+            "briefintro": req.body.briefintro,
+            "allow": req.body.allow
+        };
+        Course.updateOneData(cid, obj).then(function (next) {
+            if (next.n == 1 && next.ok == 1) {
+                return res.json(returnSuccessRes("更新成功"));
+            } else {
+                return res.json(returnErrorRes("更新失败"));
+            }
+        });
+    } else {
+        return res.json(returnErrorRes("数据不合法"));
+    }
+}
+
 exports.admin = admin;
 exports.adminLogin = adminLogin;
 exports.adminCondition = adminCondition;
@@ -442,6 +471,7 @@ exports.getAdminCourseJson = getAdminCourseJson;
 exports.getAdminCourse = getAdminCourse;
 exports.adminAddOneCourse = adminAddOneCourse;
 exports.adminDeleteCourseByCid = adminDeleteCourseByCid;
+exports.adminUpdateCourse = adminUpdateCourse;
 
 function giveValue(docs) {
     const studentZero = [];

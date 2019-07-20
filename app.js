@@ -45,7 +45,7 @@ app.post("/admin/course/json", adminController.getAdminCourseJson);
 app.get("/admin/course/detail", adminController.getAdminCourse);
 app.post("/admin/course/addition", adminController.adminAddOneCourse);
 app.delete("/admin/course/deletion/:cid", adminController.adminDeleteCourseByCid);
-app.put("/admin/course/renewal/:school_no", adminController.adminUpdateStudent);
+app.put("/admin/course/renewal/:cid", adminController.adminUpdateCourse);
 app.get("/admin/course/export",adminController.exportStudentExcel);
 
 app.get("/student", function (req, res) {

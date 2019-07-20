@@ -173,6 +173,56 @@ function studentIsModifyMsgToCode(msg) {
     return code;
 }
 
+function courseGradeCodeToMsg(code) {
+    let msg = "";
+    switch (code) {
+        case "0" :
+            msg = "初一";
+            break;
+        case "1" :
+            msg = "初二";
+            break;
+        case "2" :
+            msg = "初三";
+            break;
+        case "3" :
+            msg = "高一";
+            break;
+        case "4" :
+            msg = "高二";
+            break;
+        case "5" :
+            msg = "高三";
+            break;
+    }
+    return msg;
+}
+
+function courseGradeMsgToCode(msg) {
+    let code = "0";
+    switch (msg) {
+        case "初一" :
+            code = "0";
+            break;
+        case "初二" :
+            code = "1";
+            break;
+        case "初三" :
+            code = "2";
+            break;
+        case "高一" :
+            code = "3";
+            break;
+        case "高二" :
+            code = "4";
+            break;
+        case "高三" :
+            code = "5";
+            break;
+    }
+    return code;
+}
+
 function createInitPwd() {
     const salt = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let pwd = "";
@@ -221,3 +271,5 @@ exports.studentIsModifyCodeToMsg = studentIsModifyCodeToMsg;
 exports.studentIsModifyMsgToCode = studentIsModifyMsgToCode;
 exports.studentWeekCodeToMsg = studentWeekCodeToMsg;
 exports.studentWeekMsgToCode = studentWeekMsgToCode;
+exports.courseGradeCodeToMsg = courseGradeCodeToMsg;
+exports.courseGradeMsgToCode = courseGradeMsgToCode;

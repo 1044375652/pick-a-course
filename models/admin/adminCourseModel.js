@@ -33,7 +33,9 @@ courseSchema.statics.deleteDataByCid = function (limit) {
     return this.deleteOne(limit);
 };
 
-
+courseSchema.statics.updateOneData = function (cid, limit) {
+    return this.updateOne({"cid": cid}, limit);
+};
 
 
 const Course = mongoose.model("Course", courseSchema, "course");
