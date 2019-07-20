@@ -344,12 +344,6 @@
                     data-allow="${allow}">修改</button>
         </td>
     </tr>
-
-
-
-
-
-
 </script>
 <script type="text/javascript" src="/js/jquery.min.js"></script>
 <script type="text/javascript" src="/js/bootstrap.js"></script>
@@ -505,6 +499,7 @@
 
 
     $("#searchStudent").on("input", function () {
+        console.log($(this).val());
         debounce(debounceGetData, 500)($(this).val());
     });
 

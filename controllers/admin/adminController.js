@@ -132,7 +132,7 @@ function getAdminStudent(req, res) {
     const size = 10;
     const keyword = req.query.keyword;
     let limit = {};
-    if (keyword.length > 1) {
+    if (keyword.length > 0) {
         const reg = new RegExp(keyword, "gi");
         limit = {
             $or: [
@@ -314,17 +314,12 @@ function getAdminCourse(req, res) {
     const size = 10;
     const keyword = req.query.keyword;
     let limit = {};
-    if (keyword.length > 1) {
+    if (keyword.length > 0) {
         const reg = new RegExp(keyword, "gi");
         limit = {
             $or: [
                 {
                     "cid": {
-                        $regex: reg
-                    }
-                },
-                {
-                    "dayofweek": {
                         $regex: reg
                     }
                 },
@@ -338,6 +333,8 @@ function getAdminCourse(req, res) {
     }
 
     Course.selectData(limit).then(function (docs) {
+        console.log(docs);
+        console.log(limit);
         const count = Math.ceil(docs.length / size);
         const lastIndex = ((index * 10 + size) > docs.length) ? docs.length : (index * 10 + size);
         const courseArr = returnLimitArr(docs, index * 10, lastIndex);
