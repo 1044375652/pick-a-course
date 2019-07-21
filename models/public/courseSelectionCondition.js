@@ -18,6 +18,10 @@ courseSelectionConditionSchema.statics.addOneData = function (data) {
     return obj.save();
 };
 
+courseSelectionConditionSchema.statics.findOneDataAndDelete = function (query) {
+    return this.findOneAndDelete(query);
+};
+
 const CourseSelectionCondition = mongoose.model("CourseSelectionCondition", courseSelectionConditionSchema, "courseSelectionCondition");
 
 module.exports = CourseSelectionCondition;

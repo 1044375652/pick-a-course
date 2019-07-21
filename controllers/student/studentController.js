@@ -167,7 +167,6 @@ function studentCourseSelection(req, res) {
         const query = {
             "school_no": schoolNo
         };
-        console.log(1);
         CourseSelectionCondition.selectData(query)
             .then(function (docs) {
                 if (docs.length >= 2) {
@@ -217,6 +216,68 @@ function studentCourseSelection(req, res) {
     }
 }
 
+function studentGetCourseSelection(req, res) {
+    if (!isLogin(req)) {
+        return res.redirect("login_page");
+    }
+    if (req.params.hasOwnProperty("school_no") &&
+        (req.params.school_no.length > 0)) {
+        const school_no = req.params.school_no;
+        const query = {
+            "school_no": school_no
+        };
+        CourseSelectionCondition.selectData(query)
+            .then(function (docs) {
+                if (!docs) {
+                    return res.json(returnErrorRes("请求数据失败"));
+                }
+                return res.json(returnSuccessRes("请求数据成功", docs));
+            });
+    } else {
+        return res.json(returnErrorRes("数据不全"));
+    }
+}
+
+function studentDeleteCourse(req, res) {
+    if (!isLogin(req)) {
+        return res.redirect("/login_page");
+    }
+    if (req.params.hasOwnProperty("cid") &&
+        req.params.cid.toString().length > 0) {
+        const cid = req.params.cid;
+        const query = {
+            "cid": cid
+        };
+        Course.selectData(query)
+            .then(function (docs) {
+                if (!docs) {
+                    throw "并没有这门课程";
+                }
+            })
+            .then(function () {
+                return Course.findAndModifyOneData(query, {$inc: {"number": 1}});
+            })
+            .then(function (docs) {
+                if (!docs) {
+                    throw "更新数据库失败";
+                }
+                query.school_no = req.session.userName;
+                return CourseSelectionCondition.findOneDataAndDelete(query);
+            })
+            .then(function (docs) {
+                if (!docs) {
+                    throw "您并没有选择这么课程";
+                }
+                return res.json(returnSuccessRes("退课成功!"));
+            })
+            .catch(function (e) {
+                return res.json(returnErrorRes(e));
+            });
+    } else {
+        return res.json(returnErrorRes("数据不全"));
+    }
+}
+
 function isLogin(req) {
     if (req.session.userName) {
         return true;
@@ -233,3 +294,5 @@ exports.getStudentCourse = getStudentCourse;
 exports.exit = exit;
 exports.modifyPwdBySchoolNo = modifyPwdBySchoolNo;
 exports.studentCourseSelection = studentCourseSelection;
+exports.studentGetCourseSelection = studentGetCourseSelection;
+exports.studentDeleteCourse = studentDeleteCourse;

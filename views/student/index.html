@@ -34,6 +34,7 @@
             </form>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="#" data-target="#modifyPwdModal" data-toggle="modal">修改密码</a></li>
+                <li><a href="#" id="getCourseCondition">我的选课</a></li>
                 <li><a href="#" class="exit">退出</a></li>
             </ul>
         </div><!-- /.navbar-collapse -->
@@ -129,12 +130,10 @@
                         <th>课程编号</th>
                         <th>课程名称</th>
                         <th>上课时间</th>
-                        <th>剩余数量</th>
                         <th>授课教师</th>
-                        <th>课程简介</th>
                         <th>操作</th>
                         </thead>
-                        <tbody id="courseTmplTbody">
+                        <tbody id="courseConditionTmplTbody">
 
                         </tbody>
                     </table>
@@ -142,7 +141,6 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="submitModifyPwdBtn" disabled>Save changes</button>
             </div>
         </div>
     </div>
@@ -184,6 +182,21 @@
 
 
 
+
+
+</script>
+<script id="courseConditionTmpl" type="text/x-jquery-tmpl">
+    <tr>
+        <td style="line-height:40px;">${cid}</td>
+        <td style="line-height:40px;">${course_name}</td>
+        <td style="line-height:40px;">${dayofweek}</td>
+        <td style="line-height:40px;">${teacher}</td>
+        <td>
+            <button class="btn btn-info quitCourseBtn"
+                    data-cid="${cid}"
+                    >退课</button>
+        </td>
+    </tr>
 </script>
 <script>
     if (!parseInt(sessionStorage.getItem("isModify"))) {
@@ -439,7 +452,6 @@
                 "teacher": $(this).data("teacher"),
                 "dayofweek": studentWeekMsgToCode($(this).data("dayofweek"))
             };
-            console.log(data);
             axios.post("/student/course/selection/" + sessionStorage.getItem("userName"), data)
                 .then(function (data) {
                     if (data.status === 200 && data.data.code > 0) {
@@ -476,6 +488,41 @@
         }
         return code;
     }
+
+    $("#getCourseCondition").on("click", function () {
+        axios.get("/student/course_condition/detail/" + sessionStorage.getItem("userName"))
+            .then(function (data) {
+                if (data.status === 200 && data.data.code > 0) {
+                    const res = data.data;
+                    const length = res.data.length;
+                    for (let i = 0; i < length; i++) {
+                        res.data[i].dayofweek = studentWeekCodeToMsg(res.data[i].dayofweek);
+                    }
+                    $.tmpl($("#courseConditionTmpl"), res.data).appendTo("#courseConditionTmplTbody");
+                    $("#courseSelectionsConditionModal").modal("show");
+                } else {
+                    toastr.warning(data.data.msg);
+                }
+            });
+    });
+
+    $("#courseConditionTmplTbody").delegate(".quitCourseBtn", "click", function () {
+        if (confirm("确定退课？")) {
+            const cid = $(this).data("cid");
+            axios.delete("/student/course_condition/deletiion/" + cid)
+                .then(function (data) {
+                    if (data.status === 200 && data.data.code > 0) {
+                        const res = data.data;
+                        toastr.success(res.msg);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 500);
+                    } else {
+                        toastr.warning(data.data.msg);
+                    }
+                });
+        }
+    });
 </script>
 </body>
 </html>
