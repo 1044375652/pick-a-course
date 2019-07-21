@@ -49,10 +49,6 @@
                 <i class='iconfont'>&#xe7b4;</i>
                 <a href="/admin/course">课程管理</a>
             </li>
-            <li class='launcher'>
-                <i class='iconfont'>&#xe6f7;</i>
-                <a href="/admin/report">报表</a>
-            </li>
         </ul>
         <div data-toggle='tooltip' id='beaker' title='Made by lab2023'></div>
     </section>
@@ -95,34 +91,34 @@
     </section>
 
     <div class="container">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <th>学号</th>
+                <th>姓名</th>
+                <th>年级</th>
+                <th>性别</th>
+                <th>初始密码</th>
+                <th>加密后的密码</th>
+                <th>是否已修改初始密码</th>
+                <th>操作</th>
+                </thead>
+                <tbody id="studentTmplTbody">
 
-    </div>
-    <div class="table-responsive">
-        <table class="table table-hover">
-            <thead>
-            <th>学号</th>
-            <th>姓名</th>
-            <th>年级</th>
-            <th>性别</th>
-            <th>初始密码</th>
-            <th>加密后的密码</th>
-            <th>是否已修改初始密码</th>
-            <th>操作</th>
-            </thead>
-            <tbody id="studentTmplTbody">
-
-            </tbody>
-        </table>
-    </div>
-    <div class="row">
-        <div class="container">
-            <ul id="pagesDiv" style="list-style: none;width: 250px;display: none"></ul>
+                </tbody>
+            </table>
         </div>
-        <nav aria-label="Page navigation" style="position: relative">
-            <ul class="pagination">
-            </ul>
-        </nav>
+        <div class="row">
+            <div class="container">
+                <ul id="pagesDiv" style="list-style: none;width: 250px;display: none"></ul>
+            </div>
+            <nav aria-label="Page navigation" style="position: relative">
+                <ul class="pagination">
+                </ul>
+            </nav>
+        </div>
     </div>
+
 </div>
 </div>
 

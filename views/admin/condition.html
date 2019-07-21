@@ -3,30 +3,38 @@
 <head>
     <meta charset='utf-8'>
     <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'>
-    <title>管理员面板 - 北航附中选修课报名系统</title>
+    <title>管理员面板 - 课程管理</title>
     <link href="/css/application-a07755f5.css" rel="stylesheet" type="text/css"/>
     <link href="/css/iconfont.css" rel="stylesheet" type="text/css">
+    <link href="/css/animate.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/toastr.min.css">
+
 </head>
 <body class='main page'>
-<div class='navbar navbar-default' id='navbar'>
-    <a class='navbar-brand' href='#'>
-        <img src="/img/logo.jpeg" class="logo">北京理工大学珠海学院选课系统 - 管理员面板</a>
-    <ul class='nav navbar-nav pull-right'>
-        <li class='dropdown user'>
-            <a class='dropdown-toggle' data-toggle='dropdown' href='#'>
-                <i class='icon-user'></i>
-                <strong></strong>
-                <b class='caret'></b>
-            </a>
-            <ul class='dropdown-menu'>
-                <li>
-                    <a href="#">退出登录</a>
-                </li>
-            </ul>
-        </li>
-    </ul>
+
+<!-- Navbar -->
+<div class="container">
+    <div class='navbar navbar-default' id='navbar'>
+        <a class='navbar-brand' href='#'>
+            <img src="/img/logo.jpeg" class="logo">北京理工大学珠海学院选课系统 - 管理员面板</a>
+        <ul class='nav navbar-nav pull-right'>
+            <li class='dropdown user'>
+                <a class='dropdown-toggle' data-toggle='dropdown' href='#'>
+                    <i class='icon-user'></i>
+                    <strong></strong>
+                    <b class='caret'></b>
+                </a>
+                <ul class='dropdown-menu'>
+                    <li>
+                        <a href="#">退出登录</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
 </div>
-<div id='wrapper'>
+
+<div class='container'>
     <section id='sidebar'>
         <ul id='dock'>
             <li class='active launcher'>
@@ -41,55 +49,570 @@
                 <i class='iconfont'>&#xe7b4;</i>
                 <a href="/admin/course">课程管理</a>
             </li>
-            <li class='launcher'>
-                <i class='iconfont'>&#xe6f7;</i>
-                <a href="/admin/report">报表</a>
-            </li>
         </ul>
         <div data-toggle='tooltip' id='beaker' title='Made by lab2023'></div>
     </section>
+
+    <div class="container" style="margin: 10px 0">
+        <div class="col-lg-3 col-lg-offset-9">
+            <input style="float: right;" type="text" class="form-control" placeholder="搜索" id="searchStudent">
+        </div>
+    </div>
     <!-- Tools -->
     <section id='tools'>
         <ul class='breadcrumb' id='breadcrumb'>
-            <li class='title'>Dashboard</li>
-            <li>
-                <a href="#">Lorem</a>
+            <li class='active courseCondition'>
+                课程 - 选课详情
             </li>
-            <li class='active'>
-                <a href="#">ipsum</a>
+            <li class="studentCondition">
+                <a href="#">学生 - 选课详情</a>
+            </li>
+            <li>
+                <a class="btn btn-default"
+                   href="/admin/course_condition/export"
+                >导出课程信息Excel表格
+                </a>
             </li>
         </ul>
-    </section>
-    <!-- Content -->
-    <div id='content'>
-        <div class='panel panel-default'>
-            <div class='panel-heading'>
-                Hierapolis Rocks!
-            </div>
-            <div class='panel-body'>
 
+    </section>
+
+    <div class="container courseSelectionCondition">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <th>课程编号</th>
+                <th>课程名称</th>
+                <th>上课时间</th>
+                <th>剩余数量</th>
+                <th>授课教师</th>
+                </thead>
+                <tbody id="courseTmplTbody">
+
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <div class="container">
+                <ul id="pagesDiv" style="list-style: none;width: 250px;display: none"></ul>
             </div>
+            <nav aria-label="Page navigation" style="position: relative">
+                <ul class="pagination">
+                </ul>
+            </nav>
         </div>
     </div>
+
+    <div class="container studentSelectionCondition">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <th>学生学号</th>
+                <th>课程编号</th>
+                <th>课程名称</th>
+                <th>上课时间</th>
+                <th>授课教师</th>
+                </thead>
+                <tbody id="studentSelectionConditionTmplTbody">
+
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <div class="container">
+                <ul id="studentSelectionConditionTmplTbodyPagesDiv"
+                    style="list-style: none;width: 250px;display: none"></ul>
+            </div>
+            <nav aria-label="Page navigation" style="position: relative">
+                <ul class="pagination">
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+
 </div>
+</div>
+
+
+
 <script type="text/javascript" src="/js/jquery.min.js"></script>
 <script type="text/javascript" src="/js/bootstrap.js"></script>
 <script src="/js/toastr.min.js"></script>
 <script src="/js/axios.min.js"></script>
 <script src="/js/jquery.tmpl.js"></script>
+<script id="courseTmpl" type="text/x-jquery-tmpl">
+    <tr>
+        <td>${cid}</td>
+        <td>${name}</td>
+        <td>${dayofweek}</td>
+        <td>${number}</td>
+        <td>${teacher}</td>
+    </tr>
+
+
+
+</script>
+<script id="studentSelectionConditionTmpl" type="text/x-jquery-tmpl">
+    <tr>
+        <td>${school_no}</td>
+        <td>${cid}</td>
+        <td>${course_name}</td>
+        <td>${dayofweek}</td>
+        <td>${teacher}</td>
+    </tr>
+
+
+
+
+</script>
 <script>
     $("#navbar > ul > li.dropdown.user > a > strong").text(sessionStorage.getItem("userName"));
 </script>
 <script>
-    $("#navbar > ul > li > ul > li > a").on("click", function () {
-        axios.put("/admin/exit").then(function (data) {
-            sessionStorage.clear();
-            toastr.success(data.data.msg);
-            setTimeout(function () {
-                location.href = data.data.data.url;
-            }, 500);
+
+    function course() {
+        function Vue() {
+            this.data = {
+                page: 1,
+                keyword: "",
+                count: 1
+            }
+        }
+
+        let vue = new Vue();
+        vue.data.keyword = $("#searchStudent").val();
+
+
+        function getData(size = 1) {
+            vue.data.data = [];
+            axios.get("/admin/course/detail", {
+                params: {
+                    page: size,
+                    keyword: vue.data.keyword,
+                    count: vue.data.count,
+                }
+            }).then(function (data) {
+                if (data.status === 200 && data.data.code > 0) {
+                    const res = data.data.data;
+                    vue.data.page = parseInt(res.page);
+                    vue.data.count = res.count;
+                    vue.data.keyword = "";
+                    vue.data.data = res.data;
+                    showData(vue.data.data);
+                } else {
+                    toastr.warning(data.data.msg);
+                }
+            });
+        }
+
+        getData(vue.data.page);
+
+
+        function showData(items) {
+            $("#courseTmplTbody").empty();
+            for (let i = 0; i < items.length; i++) {
+                items[i].dayofweek = studentWeekCodeToMsg(items[i].dayofweek);
+                for (let j = 0; j < items[i].allow.length; j++) {
+                    items[i].allow[j] = studentGradeCodeToMsg(items[i].allow[j]);
+                }
+            }
+            $.tmpl($("#courseTmpl"), items).appendTo("#courseTmplTbody");
+            $("nav > .pagination").empty();
+            $("nav > .pagination")
+                .append(`<li class="prePage"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>`)
+                .append(`<li class="page"><a href="#"><span>1</span></a></li>`)
+                .append(`<li class="pages"><a href="#"><span>...</span></a></li>`)
+                .append(`<li class="page"><a href="#"><span>${vue.data.count}</span></a></li>`)
+                .append(`<li class="nextPage"><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>`)
+                .append(`<li class="page"><a href="#"><span>${vue.data.page}</span></a></li>`);
+        }
+
+        $("nav > .pagination").delegate(".prePage", "click", function () {
+            if (vue.data.page < 1) {
+                toastr.warning("已经是第一页了");
+                return;
+            }
+            getData(vue.data.page - 1);
         });
+
+        $("nav > .pagination").delegate(".nextPage", "click", function () {
+            if (vue.data.page >= vue.data.count) {
+                toastr.warning("已经是顶页了");
+                return;
+            }
+            getData(vue.data.page + 1);
+        });
+
+        $("nav > .pagination").delegate(".page a", "click", function (e) {
+            e.preventDefault();
+        });
+
+        $("nav > .pagination").delegate(".pages a", "click", function (e) {
+            e.preventDefault();
+        });
+
+        $("#pagesDiv").delegate(".page a", "click", function (e) {
+            e.preventDefault();
+        });
+
+
+        $("nav > .pagination").delegate(".page a span", "click", function (e) {
+            let page = $(this).text();
+            if (page >= 1 && page <= vue.data.count) {
+                getData(page);
+            }
+        });
+
+        $("#pagesDiv").delegate(".page a span", "click", function (e) {
+            let page = $(this).text();
+            if (page >= 1 && page <= vue.data.count) {
+                getData(page);
+            }
+        });
+
+        $("nav > .pagination").delegate(".pages", "click", function (e) {
+            let pagesDiv = $('#pagesDiv');
+
+            if (pagesDiv.css("display") == "none") {
+                let childrensLength = pagesDiv.children().length;
+                if (childrensLength != (vue.data.count - 2)) {
+                    let domStr = "";
+                    for (let i = 2; i < vue.data.count - 1; i++) {
+                        domStr += `<li class="page" style="text-align:center;float: left;width: 30px;height: 30px;line-height: 30px;border:1px solid #dddddd;margin: 0 2px;"><a href="#"><span>${i}</span></a></li>`;
+                    }
+                    pagesDiv.empty();
+                    pagesDiv.append(domStr);
+                }
+                pagesDiv.show(500);
+            } else {
+                pagesDiv.hide(500);
+            }
+
+        });
+
+
+        $("#searchStudent").on("input", function () {
+            debounce(debounceGetData, 500)($(this).val());
+        });
+
+        function debounceGetData() {
+            vue.data.keyword = $("#searchStudent").val();
+            getData();
+        }
+
+        function debounce(func, delay) {
+            return function (args) {
+                clearInterval(func.id);
+                func.id = setTimeout(function () {
+                    func(args);
+                }, delay);
+            };
+
+        }
+
+
+        function studentGradeCodeToMsg(code) {
+            let msg = "";
+            switch (code) {
+                case "0" :
+                    msg = "初一";
+                    break;
+                case "1" :
+                    msg = "初二";
+                    break;
+                case "2" :
+                    msg = "初三";
+                    break;
+                case "3" :
+                    msg = "高一";
+                    break;
+                case "4" :
+                    msg = "高二";
+                    break;
+                case "5" :
+                    msg = "高三";
+                    break;
+            }
+            return msg;
+        }
+
+
+        $("#navbar > ul > li > ul > li > a").on("click", function () {
+            axios.put("/admin/exit").then(function (data) {
+                sessionStorage.clear();
+                toastr.success(data.data.msg);
+                setTimeout(function () {
+                    location.href = data.data.data.url;
+                }, 500);
+            });
+        });
+    }
+
+    function student() {
+        function Vue() {
+            this.data = {
+                page: 1,
+                keyword: "",
+                count: 1
+            }
+        }
+
+        let vue = new Vue();
+        vue.data.keyword = $("#searchStudent").val();
+
+
+        function getData(size = 1) {
+            vue.data.data = [];
+            axios.get("/admin/course_condition/detail", {
+                params: {
+                    page: size,
+                    keyword: vue.data.keyword,
+                    count: vue.data.count,
+                }
+            }).then(function (data) {
+                if (data.status === 200 && data.data.code > 0) {
+                    const res = data.data.data;
+                    vue.data.page = parseInt(res.page);
+                    vue.data.count = res.count;
+                    vue.data.keyword = "";
+                    vue.data.data = res.data;
+                    console.log(vue);
+                    showData(vue.data.data);
+                } else {
+                    toastr.warning(data.data.msg);
+                }
+            });
+        }
+
+        getData(vue.data.page);
+
+
+        function showData(items) {
+            $("#studentSelectionConditionTmplTbody").empty();
+            for (let i = 0; i < items.length; i++) {
+                items[i].dayofweek = studentWeekCodeToMsg(items[i].dayofweek);
+                $.tmpl($("#studentSelectionConditionTmpl"), items[i]).appendTo("#studentSelectionConditionTmplTbody");
+            }
+            $.tmpl($("#studentSelectionConditionTmpl"), items).appendTo("#studentSelectionConditionTmplTbody");
+            $("nav > .pagination").empty();
+            $("nav > .pagination")
+                .append(`<li class="prePage"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>`)
+                .append(`<li class="page"><a href="#"><span>1</span></a></li>`)
+                .append(`<li class="pages"><a href="#"><span>...</span></a></li>`)
+                .append(`<li class="page"><a href="#"><span>${vue.data.count}</span></a></li>`)
+                .append(`<li class="nextPage"><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>`)
+                .append(`<li class="page"><a href="#"><span>${vue.data.page}</span></a></li>`);
+        }
+
+        $("nav > .pagination").delegate(".prePage", "click", function () {
+            if (vue.data.page < 1) {
+                toastr.warning("已经是第一页了");
+                return;
+            }
+            getData(vue.data.page - 1);
+        });
+
+        $("nav > .pagination").delegate(".nextPage", "click", function () {
+            if (vue.data.page >= vue.data.count) {
+                toastr.warning("已经是顶页了");
+                return;
+            }
+            getData(vue.data.page + 1);
+        });
+
+        $("nav > .pagination").delegate(".page a", "click", function (e) {
+            e.preventDefault();
+        });
+
+        $("nav > .pagination").delegate(".pages a", "click", function (e) {
+            e.preventDefault();
+        });
+
+        $("#pagesDiv").delegate(".page a", "click", function (e) {
+            e.preventDefault();
+        });
+
+
+        $("nav > .pagination").delegate(".page a span", "click", function (e) {
+            let page = $(this).text();
+            if (page >= 1 && page <= vue.data.count) {
+                getData(page);
+            }
+        });
+
+        $("#pagesDiv").delegate(".page a span", "click", function (e) {
+            let page = $(this).text();
+            if (page >= 1 && page <= vue.data.count) {
+                getData(page);
+            }
+        });
+
+        $("nav > .pagination").delegate(".pages", "click", function (e) {
+            let pagesDiv = $('#pagesDiv');
+
+            if (pagesDiv.css("display") == "none") {
+                let childrensLength = pagesDiv.children().length;
+                if (childrensLength != (vue.data.count - 2)) {
+                    let domStr = "";
+                    for (let i = 2; i < vue.data.count - 1; i++) {
+                        domStr += `<li class="page" style="text-align:center;float: left;width: 30px;height: 30px;line-height: 30px;border:1px solid #dddddd;margin: 0 2px;"><a href="#"><span>${i}</span></a></li>`;
+                    }
+                    pagesDiv.empty();
+                    pagesDiv.append(domStr);
+                }
+                pagesDiv.show(500);
+            } else {
+                pagesDiv.hide(500);
+            }
+
+        });
+
+
+        $("#searchStudent").on("input", function () {
+            console.log($(this).val());
+            debounce(debounceGetData, 500)($(this).val());
+        });
+
+        function debounceGetData() {
+            vue.data.keyword = $("#searchStudent").val();
+            getData();
+        }
+
+        function debounce(func, delay) {
+            return function (args) {
+                clearInterval(func.id);
+                func.id = setTimeout(function () {
+                    func(args);
+                }, delay);
+            };
+
+        }
+
+
+        function studentGradeCodeToMsg(code) {
+            let msg = "";
+            switch (code) {
+                case "0" :
+                    msg = "初一";
+                    break;
+                case "1" :
+                    msg = "初二";
+                    break;
+                case "2" :
+                    msg = "初三";
+                    break;
+                case "3" :
+                    msg = "高一";
+                    break;
+                case "4" :
+                    msg = "高二";
+                    break;
+                case "5" :
+                    msg = "高三";
+                    break;
+            }
+            return msg;
+        }
+
+
+        $("#navbar > ul > li > ul > li > a").on("click", function () {
+            axios.put("/admin/exit").then(function (data) {
+                sessionStorage.clear();
+                toastr.success(data.data.msg);
+                setTimeout(function () {
+                    location.href = data.data.data.url;
+                }, 500);
+            });
+        });
+    }
+
+
+    course();
+
+    function studentWeekCodeToMsg(code) {
+        let msg = "";
+        switch (code) {
+            case "1" :
+                msg = "周一";
+                break;
+            case "2" :
+                msg = "周二";
+                break;
+            case "3" :
+                msg = "周三";
+                break;
+            case "4" :
+                msg = "周四";
+                break;
+            case "5" :
+                msg = "周五";
+                break;
+        }
+        return msg;
+    }
+
+    function studentWeekMsgToCode(msg) {
+        let code = "0";
+        switch (msg) {
+            case "周一" :
+                code = "1";
+                break;
+            case "周二" :
+                code = "2";
+                break;
+            case "周三" :
+                code = "3";
+                break;
+            case "周四" :
+                code = "4";
+                break;
+            case "周五" :
+                code = "5";
+                break;
+        }
+        return code;
+    }
+
+
+    function courseGradeMsgToCode(msg) {
+        let code = "0";
+        switch (msg) {
+            case "初一" :
+                code = "0";
+                break;
+            case "初二" :
+                code = "1";
+                break;
+            case "初三" :
+                code = "2";
+                break;
+            case "高一" :
+                code = "3";
+                break;
+            case "高二" :
+                code = "4";
+                break;
+            case "高三" :
+                code = "5";
+                break;
+        }
+        return code;
+    }
+
+
+    $(".studentCondition").on("click", function () {
+        $(".studentSelectionCondition").show(500);
+        $(".courseSelectionCondition").hide(500);
+        student();
     });
+
+    $(".courseCondition").on("click", function () {
+        $(".courseSelectionCondition").show(500);
+        $(".studentSelectionCondition").hide(500);
+        course();
+    });
+
 </script>
 </body>
 </html>

@@ -9,11 +9,13 @@ const {createInitPwd} = require("../../uitls/utils");
 const {md5Crypto} = require("../../uitls/utils");
 const {studentGradeMsgToCode} = require("../../uitls/utils");
 const {returnLimitArr} = require("../../uitls/utils");
+const {studentWeekCodeToMsg} = require("../../uitls/utils");
 const formidable = require("formidable");
 const xlsx = require("node-xlsx");
 const fs = require('fs');
 const Student = require("../../models/student/studentModel");
 const Course = require("../../models/admin/adminCourseModel");
+const CourseSelectionCondition = require("../../models/public/courseSelectionCondition");
 
 
 function admin(req, res) {
@@ -245,7 +247,7 @@ function exportStudentExcel(req, res) {
             const arr = giveValue(docs);
             const buffer = xlsx.build(arr);
             fs.writeFile("./public/statics/student.xlsx", buffer, function () {
-                res.redirect("/statics/student.xlsx")
+                res.redirect("/statics/student.xlsx");
                 return;
             });
         });
@@ -479,6 +481,92 @@ function exportCourseExcel(req, res) {
         });
 }
 
+function adminGetCourseSelection(req, res) {
+    const page = parseInt(req.query.page);
+    const count = parseInt(req.query.count);
+    if (page < 1) {
+        res.json(returnErrorRes("page不能小于1"));
+        return;
+    }
+    if (count > 1 && page > count) {
+        res.json(returnErrorRes("page太大了"));
+        return;
+    }
+    const index = page - 1;
+    const size = 10;
+    const keyword = req.query.keyword;
+    let limit = {};
+    if (keyword.length > 0) {
+        const reg = new RegExp(keyword, "gi");
+        limit = {
+            $or: [
+                {
+                    "cid": {
+                        $regex: reg
+                    }
+                },
+                {
+                    "teacher": {
+                        $regex: reg
+                    }
+                },
+                {
+                    "school_no": {
+                        $regex: reg
+                    }
+                }
+            ]
+        };
+    }
+
+    CourseSelectionCondition.selectData(limit).then(function (docs) {
+        console.log(docs);
+        console.log(limit);
+        const count = Math.ceil(docs.length / size);
+        const lastIndex = ((index * 10 + size) > docs.length) ? docs.length : (index * 10 + size);
+        const courseArr = returnLimitArr(docs, index * 10, lastIndex);
+        const newPage = page;
+        return res.json(returnSuccessRes("请求数据成功", {
+            "count": count,
+            "page": newPage,
+            "data": courseArr
+        }));
+    });
+}
+
+function exportSelectionsMsgExcel(req, res) {
+    CourseSelectionCondition.selectData()
+        .then(function (docs) {
+            if (docs.length < 1) {
+                return res.json(returnErrorRes("导出错误"));
+            }
+            const data = [];
+            data.push([
+                "学生学号",
+                "课程编号",
+                "课程名称",
+                "授课教师",
+                "上课时间"
+            ]);
+            for (let item of docs) {
+                const arr = [];
+                arr.push(item.school_no);
+                arr.push(item.cid);
+                arr.push(item.course_name);
+                arr.push(item.teacher);
+                arr.push(studentWeekCodeToMsg(item.dayofweek));
+                data.push(arr);
+            }
+            const buffer = xlsx.build([{
+                "name": "学生 - 选课详情",
+                "data": data
+            }]);
+            fs.writeFile("./public/statics/studentSelectionsMsg.xlsx", buffer, function () {
+                return res.redirect("/statics/studentSelectionsMsg.xlsx");
+            });
+        });
+}
+
 exports.admin = admin;
 exports.adminLogin = adminLogin;
 exports.adminCondition = adminCondition;
@@ -499,6 +587,8 @@ exports.adminAddOneCourse = adminAddOneCourse;
 exports.adminDeleteCourseByCid = adminDeleteCourseByCid;
 exports.adminUpdateCourse = adminUpdateCourse;
 exports.exportCourseExcel = exportCourseExcel;
+exports.adminGetCourseSelection = adminGetCourseSelection;
+exports.exportSelectionsMsgExcel = exportSelectionsMsgExcel;
 
 function giveValue(docs) {
     const studentZero = [];

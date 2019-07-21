@@ -48,6 +48,9 @@ app.post("/admin/course/addition", adminController.adminAddOneCourse);
 app.delete("/admin/course/deletion/:cid", adminController.adminDeleteCourseByCid);
 app.put("/admin/course/renewal/:cid", adminController.adminUpdateCourse);
 app.get("/admin/course/export", adminController.exportCourseExcel);
+app.get("/admin/course_condition/detail", adminController.adminGetCourseSelection);
+app.get("/admin/course_condition/export", adminController.exportSelectionsMsgExcel);
+
 
 // 学生
 app.get("/login_page", studentController.getLoginPage);
