@@ -552,53 +552,6 @@
         return msg;
     }
 
-    function studentWeekMsgToCode(msg) {
-        let code = "0";
-        switch (msg) {
-            case "周一" :
-                code = "1";
-                break;
-            case "周二" :
-                code = "2";
-                break;
-            case "周三" :
-                code = "3";
-                break;
-            case "周四" :
-                code = "4";
-                break;
-            case "周五" :
-                code = "5";
-                break;
-        }
-        return code;
-    }
-
-
-    function courseGradeMsgToCode(msg) {
-        let code = "0";
-        switch (msg) {
-            case "初一" :
-                code = "0";
-                break;
-            case "初二" :
-                code = "1";
-                break;
-            case "初三" :
-                code = "2";
-                break;
-            case "高一" :
-                code = "3";
-                break;
-            case "高二" :
-                code = "4";
-                break;
-            case "高三" :
-                code = "5";
-                break;
-        }
-        return code;
-    }
 
 
     $(".studentCondition").on("click", function () {
