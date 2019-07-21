@@ -37,6 +37,10 @@ courseSchema.statics.updateOneData = function (cid, limit) {
     return this.updateOne({"cid": cid}, limit);
 };
 
+courseSchema.statics.findAndModifyOneData = function (query, limit) {
+    return this.updateOne(query, limit);
+};
+
 
 const Course = mongoose.model("Course", courseSchema, "course");
 

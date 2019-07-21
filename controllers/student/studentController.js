@@ -3,6 +3,7 @@ const Student = require("../../models/student/studentModel");
 const {returnErrorRes} = require("../../uitls/utils");
 const {returnSuccessRes} = require("../../uitls/utils");
 const Course = require("../../models/admin/adminCourseModel");
+const CourseSelectionCondition = require("../../models/public/courseSelectionCondition");
 const {returnLimitArr} = require("../../uitls/utils");
 
 
@@ -129,11 +130,11 @@ function modifyPwdBySchoolNo(req, res) {
                 "pwd": md5Crypto(oldPwd)
             };
             const update = {
-                "pwd" : md5Crypto(newPwd),
-                "is_modify" : 1,
+                "pwd": md5Crypto(newPwd),
+                "is_modify": 1,
             };
-            Student.selectOneAndUpdate(query,update).then(function (docs) {
-                if(docs){
+            Student.selectOneAndUpdate(query, update).then(function (docs) {
+                if (docs) {
                     return res.json(returnSuccessRes("修改成功"));
                 }
                 return res.json(returnErrorRes("修改失败"));
@@ -141,6 +142,78 @@ function modifyPwdBySchoolNo(req, res) {
         } else {
             return res.json(returnErrorRes("数据不全"));
         }
+    }
+}
+
+function studentCourseSelection(req, res) {
+    if (!isLogin(req)) {
+        return res.redirect("/login_page");
+    }
+    if (req.params.hasOwnProperty("school_no") &&
+        req.body.hasOwnProperty("cid") &&
+        req.body.hasOwnProperty("name") &&
+        req.body.hasOwnProperty("teacher") &&
+        req.body.hasOwnProperty("dayofweek") &&
+        (req.params.school_no.length > 0) &&
+        (req.body.cid.toString().length > 0) &&
+        (req.body.teacher.length > 0) &&
+        (req.body.dayofweek.length > 0) &&
+        (req.body.name.length > 0)) {
+        const schoolNo = req.params.school_no;
+        const cid = req.body.cid;
+        const course_name = req.body.name;
+        const teacher = req.body.teacher;
+        const dayofweek = req.body.dayofweek;
+        const query = {
+            "school_no": schoolNo
+        };
+        console.log(1);
+        CourseSelectionCondition.selectData(query)
+            .then(function (docs) {
+                if (docs.length >= 2) {
+                    throw "您已选课程已达上限";
+                }
+                query.cid = cid;
+                return CourseSelectionCondition.selectData(query);
+            })
+            .then(function (docs) {
+                if (docs.length > 0) {
+                    throw "您已经选了这门课程了";
+                }
+                const courseQuery = {
+                    "cid": cid,
+                    "number": {
+                        $gt: 0
+                    }
+                };
+                const exec = {
+                    $inc: {
+                        "number": -1
+                    }
+                };
+                return Course.findAndModifyOneData(courseQuery, exec);
+            })
+            .then(function (docs) {
+                if (!docs) {
+                    throw "您选的这门课数量已经满了";
+                }
+                query.course_name = course_name;
+                query.teacher = teacher;
+                query.dayofweek = dayofweek;
+                return CourseSelectionCondition.addOneData(query);
+            })
+            .then(function (docs) {
+                if (docs) {
+                    return res.json(returnSuccessRes("选课成功"));
+                } else {
+                    return res.json(returnErrorRes("选课失败"));
+                }
+            })
+            .catch(function (e) {
+                return res.json(returnErrorRes(e))
+            });
+    } else {
+        return res.json(returnErrorRes("数据不全"));
     }
 }
 
@@ -159,3 +232,4 @@ exports.login = login;
 exports.getStudentCourse = getStudentCourse;
 exports.exit = exit;
 exports.modifyPwdBySchoolNo = modifyPwdBySchoolNo;
+exports.studentCourseSelection = studentCourseSelection;

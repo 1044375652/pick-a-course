@@ -114,6 +114,39 @@
         </div>
     </div>
 </div>
+<div class="modal fade" tabindex="-1" role="dialog" id="courseSelectionsConditionModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">我的选课情况</h4>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                        <th>课程编号</th>
+                        <th>课程名称</th>
+                        <th>上课时间</th>
+                        <th>剩余数量</th>
+                        <th>授课教师</th>
+                        <th>课程简介</th>
+                        <th>操作</th>
+                        </thead>
+                        <tbody id="courseTmplTbody">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="submitModifyPwdBtn" disabled>Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 <script type="text/javascript" src="/js/jquery.min.js"></script>
 <script type="text/javascript" src="/js/bootstrap.js"></script>
@@ -140,9 +173,15 @@
         <td>${teacher}</td>
         <td>${briefintro}</td>
         <td>
-            <button class="btn btn-info deleteBtn")>选课</button>
+            <button class="btn btn-info chooseCourseBtn"
+                    data-cid="${cid}"
+                    data-name="${name}"
+                    data-teacher="${teacher}"
+                    data-dayofweek="${dayofweek}"
+                    >选课</button>
         </td>
     </tr>
+
 
 
 </script>
@@ -377,7 +416,7 @@
         for (let item of formDataArr) {
             data[item.name] = item.value;
         }
-        axios.put("/student/course/renewal/"+sessionStorage.getItem("userName"), data)
+        axios.put("/student/course/renewal/" + sessionStorage.getItem("userName"), data)
             .then(function (data) {
                 if (data.status === 200 && data.data.code > 0) {
                     const res = data.data;
@@ -392,6 +431,51 @@
             })
     });
 
+    $("#courseTmplTbody").delegate(".chooseCourseBtn", "click", function () {
+        if (confirm("确定选择：" + $(this).data("cid") + "的课程吗？")) {
+            const data = {
+                "cid": $(this).data("cid"),
+                "name": $(this).data("name"),
+                "teacher": $(this).data("teacher"),
+                "dayofweek": studentWeekMsgToCode($(this).data("dayofweek"))
+            };
+            console.log(data);
+            axios.post("/student/course/selection/" + sessionStorage.getItem("userName"), data)
+                .then(function (data) {
+                    if (data.status === 200 && data.data.code > 0) {
+                        const res = data.data;
+                        toastr.success(res.msg);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 500);
+                    } else {
+                        toastr.warning(data.data.msg);
+                    }
+                });
+        }
+    });
+
+    function studentWeekMsgToCode(msg) {
+        let code = "0";
+        switch (msg) {
+            case "周一" :
+                code = "1";
+                break;
+            case "周二" :
+                code = "2";
+                break;
+            case "周三" :
+                code = "3";
+                break;
+            case "周四" :
+                code = "4";
+                break;
+            case "周五" :
+                code = "5";
+                break;
+        }
+        return code;
+    }
 </script>
 </body>
 </html>

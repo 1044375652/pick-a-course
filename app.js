@@ -56,6 +56,7 @@ app.get("/index", studentController.index);
 app.get("/student/course/detail", studentController.getStudentCourse);
 app.put("/student/exit", studentController.exit);
 app.put("/student/course/renewal/:school_no", studentController.modifyPwdBySchoolNo);
+app.post("/student/course/selection/:school_no", studentController.studentCourseSelection);
 
 app.get("/student", function (req, res) {
     res.send("学生登录");
